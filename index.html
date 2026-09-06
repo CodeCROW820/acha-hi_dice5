@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>あちゃダイス</title>
+    <title>あちゃーひダイス</title>
     <style>
         body {
             margin: 0;
@@ -396,7 +396,6 @@
             soundSettings.masterVolume = val / 100;
             masterVolVal.textContent = val;
 
-            // 再生中のオーディオの音量を即時反映
             const currentBGM = (!rollAudio.paused) ? rollAudio : (!winAudio.paused) ? winAudio : null;
             if (currentBGM) {
                 currentBGM.volume = soundSettings.masterVolume;
@@ -463,10 +462,18 @@
         function updateStatsUI() {
             document.getElementById('stat-total').textContent = stats.total;
             const calcRate = (count) => stats.total === 0 ? '0.0%' : ((count / stats.total) * 100).toFixed(1) + '%';
-            document.getElementById('stat-acha').textContent = `${stats.acha} (${calcRate(stats.acha)})`;
-            document.getElementById('stat-achader').textContent = `${stats.achaDash} (${calcRate(stats.achaDash)})`;
-            document.getElementById('stat-achahi').textContent = `${stats.achaHi} (${calcRate(stats.achaHi)})`;
-            document.getElementById('stat-max').textContent = `${stats.achaDashHi} (${calcRate(stats.achaDashHi)})`;
+
+            // 表示用に合算して計算・出力
+            const totalAcha = stats.acha + stats.achaDash + stats.achaHi + stats.achaDashHi;
+            const totalAchaDash = stats.achaDash + stats.achaDashHi;
+            const totalAchaHi = stats.achaHi + stats.achaDashHi;
+            const totalAchaDashHi = stats.achaDashHi;
+
+            document.getElementById('stat-acha').textContent = `${totalAcha} (${calcRate(totalAcha)})`;
+            document.getElementById('stat-achader').textContent = `${totalAchaDash} (${calcRate(totalAchaDash)})`;
+            document.getElementById('stat-achahi').textContent = `${totalAchaHi} (${calcRate(totalAchaHi)})`;
+            document.getElementById('stat-max').textContent = `${totalAchaDashHi} (${calcRate(totalAchaDashHi)})`;
+
             localStorage.setItem('achaDiceStats', JSON.stringify(stats));
         }
 
