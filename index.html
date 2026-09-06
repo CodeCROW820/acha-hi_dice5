@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>あちゃーひダイス</title>
+    <title>あちゃダイス</title>
     <style>
         body {
             margin: 0;
@@ -905,7 +905,7 @@
             {
                 id: 'dont_mind_salvation',
                 name: '、、、どんまい',
-                desc: '運がない',
+                desc: '８０回連続であちゃーひが出ない',
                 icon: 'achahi.png',
                 rank: 'silver',
                 checkUnlocked: (stats) => stats.unlockedSalvation === true
@@ -1656,7 +1656,7 @@
             resultDiv.classList.add('fade-out');
             btn.classList.add('fade-out');
 
-            statusDiv.textContent = 'いざ、尋常...！';
+            statusDiv.textContent = 'いざ、尋常に...';
             setCameraPos(0, 6, 9, 1600, 0, 0, 0);
 
             diceArray.forEach((dice, index) => {
@@ -1688,7 +1688,7 @@
 
             setTimeout(() => {
                 if (rollSessionId !== currentSessionId) return;
-                statusDiv.textContent = '壺皿の中で交錯！';
+                statusDiv.textContent = '壺皿の中であちゃあちゃ';
                 setCameraPos(2.5, 1.2, 2.5, 1200, 0, 0, 0);
             }, 3000);
 
