@@ -111,43 +111,6 @@
             margin-left: 2px;
         }
 
-        #secret-btn {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: #f1c40f;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(241, 196, 15, 0.2);
-            border-radius: 20px;
-            cursor: pointer;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease, background 0.3s ease, border-color 0.3s ease;
-            z-index: 50;
-        }
-
-        #secret-btn.active {
-            opacity: 0.15;
-            pointer-events: auto;
-        }
-
-        #secret-btn.active:hover {
-            opacity: 0.6;
-            background: rgba(241, 196, 15, 0.15);
-            border-color: rgba(241, 196, 15, 0.5);
-        }
-
-        #secret-btn.pushed {
-            opacity: 0.9;
-            background: linear-gradient(135deg, #f39c12, #e67e22);
-            color: #fff;
-            border-color: #f1c40f;
-            box-shadow: 0 0 15px rgba(241, 196, 15, 0.6);
-        }
-
         #acha-banner {
             position: absolute;
             top: 37.5vh;
@@ -255,18 +218,15 @@
         </div>
     </div>
 
-    <button id="secret-btn">あちゃ</button>
-
     <script>
         const BGM_VOL_NORMAL = 0.9;
-        const BGM_VOL_DUCK = 0.2; // 効果音再生時のダッキング音量（20%）
+        const BGM_VOL_DUCK = 0.2;
 
         const rollAudio = new Audio('roll.mp3');
         const winAudio = new Audio('win.mp3');
         rollAudio.loop = true;
         winAudio.loop = true;
 
-        // 各役専用の効果音オブジェクト（acha4は除外）
         const soundEffects = {
             'acha': new Audio('acha1.mp3'),
             'achaDash': new Audio('acha2.mp3'),
@@ -276,12 +236,10 @@
         let rollFadeTimer = null;
         let winFadeTimer = null;
         
-        // ダッキング制御用
         let bgmFadeTimer = null;
         let soundMonitor = null;
         let targetBGMVolume = BGM_VOL_NORMAL;
 
-        // ローカルストレージから統計データを読み込み（なければ初期化）
         const stats = JSON.parse(localStorage.getItem('achaDiceStats')) || {
             total: 0,
             acha: 0,
@@ -580,7 +538,6 @@
         camera.lookAt(0, 0, 0);
 
         let isRolling = false;
-        let secretTrickActive = false;
         let secondShowTimer = null;
         let showCount = 0; // 巡数カウンター
         let cameraTarget = new THREE.Vector3(0, 0, 0);
@@ -713,23 +670,13 @@
         }
 
         const btn = document.getElementById('roll-btn');
-        const secretBtn = document.getElementById('secret-btn');
         const statusDiv = document.getElementById('status');
         const resultDiv = document.getElementById('result');
         const achaBanner = document.getElementById('acha-banner');
 
-        secretBtn.addEventListener('click', () => {
-            if (!isRolling || secretTrickActive) return;
-            secretTrickActive = true;
-            secretBtn.classList.add('pushed');
-            secretBtn.textContent = 'あちゃ!!';
-            statusDiv.textContent = '念が通じた...！？';
-        });
-
         function rollDice() {
             if (isRolling) return;
             isRolling = true;
-            secretTrickActive = false;
             btn.disabled = true;
 
             clearTimeout(secondShowTimer);
@@ -741,8 +688,6 @@
 
             resultDiv.classList.add('fade-out');
             btn.classList.add('fade-out');
-            secretBtn.className = 'active';
-            secretBtn.textContent = 'あちゃ';
 
             statusDiv.textContent = 'いざ、尋常...！';
             setCameraPos(0, 6, 9, 1600, 0, 0, 0);
@@ -775,40 +720,25 @@
             });
 
             setTimeout(() => {
-                if (!secretTrickActive) {
-                    statusDiv.textContent = '壺皿の中で交錯！';
-                }
+                statusDiv.textContent = '壺皿の中で交錯！';
                 setCameraPos(2.5, 1.2, 2.5, 1200, 0, 0, 0);
             }, 3000);
 
             setTimeout(() => {
                 const HALF_PI = Math.PI / 2;
-                const forcedTargets = ['あ', 'ち', 'ゃ', 'ー', 'ひ'];
 
                 diceArray.forEach((dice, index) => {
                     let targetX, targetY, targetZ;
 
-                    if (secretTrickActive) {
-                        const targetChar = forcedTargets[index];
-                        const rot = targetRotations[targetChar];
-                        const randomYOffset = Math.floor(Math.random() * 4) * HALF_PI;
-                        
-                        targetX = rot.x;
-                        targetY = rot.y + randomYOffset;
-                        targetZ = rot.z;
-                    } else {
-                        targetX = Math.round(dice.rotation.x / HALF_PI) * HALF_PI;
-                        targetY = Math.round(dice.rotation.y / HALF_PI) * HALF_PI;
-                        targetZ = Math.round(dice.rotation.z / HALF_PI) * HALF_PI;
-                    }
+                    targetX = Math.round(dice.rotation.x / HALF_PI) * HALF_PI;
+                    targetY = Math.round(dice.rotation.y / HALF_PI) * HALF_PI;
+                    targetZ = Math.round(dice.rotation.z / HALF_PI) * HALF_PI;
 
                     new TWEEN.Tween(dice.rotation)
                         .to({ x: targetX, y: targetY, z: targetZ }, 600)
                         .easing(TWEEN.Easing.Quadratic.Out)
                         .start();
                 });
-
-                secretBtn.className = '';
             }, 5000);
 
             setTimeout(() => {
@@ -827,13 +757,12 @@
                 let bannerText = '';
                 let isMaxCombo = false;
 
-                // 排他的な役の判定 ＆ 各効果音（acha1〜3）の再生（あちゃーひ/acha4は除外）
+                // 排他的な役の判定 ＆ 各効果音（acha1〜3）の再生
                 if (hasA && hasChi && hasYa && hasDash && hasHi) {
                     fixedChars = ['あ', 'ち', 'ゃ', 'ー', 'ひ'];
                     bannerText = 'ACHA-HI';
                     isMaxCombo = true;
                     stats.achaDashHi++;
-                    // acha4はなしなのでここでは効果音を鳴らさない
                 } else if (hasA && hasChi && hasYa && hasDash) {
                     fixedChars = ['あ', 'ち', 'ゃ', 'ー'];
                     bannerText = 'ACHA-';
@@ -890,7 +819,7 @@
                     achaBanner.style.display = 'none';
                     achaBanner.classList.remove('flow-acha');
 
-                    statusDiv.textContent = secretTrickActive ? 'あちゃパワー大成功！' : (isMaxCombo ? '🎉 完全制覇！あちゃーひ！ 🎉' : '勝負あり！');
+                    statusDiv.textContent = isMaxCombo ? '🎉 完全制覇！あちゃーひ！ 🎉' : '勝負あり！';
                     resultDiv.textContent = `【 ${finalResults.join(' ')} 】`;
 
                     resultDiv.classList.remove('fade-out');
