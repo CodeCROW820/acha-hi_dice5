@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>あちゃあルーレット</title>
+    <title>3D文字サイコロゲーム (5個版)</title>
     <style>
         body {
             margin: 0;
@@ -348,13 +348,17 @@
             }
         }
 
+        // 特別演出用のあちゃひBGM再生部も正常にターゲット音量と同期
         let achaBgmTimer = null;
         function startAchaHiBGM() {
             clearTimeout(achaBgmTimer);
             achaBgmTimer = setTimeout(() => {
-                winAudio.currentTime = 0;
-                winAudio.volume = 0.9;
-                winAudio.play().catch(e => console.log('あちゃひBGM再生エラー:', e));
+                if (winAudio.paused) {
+                    winAudio.currentTime = 0;
+                    winAudio.volume = BGM_VOL_NORMAL;
+                    targetBGMVolume = BGM_VOL_NORMAL;
+                    winAudio.play().catch(e => console.log('あちゃひBGM再生エラー:', e));
+                }
             }, 2000);
         }
 
