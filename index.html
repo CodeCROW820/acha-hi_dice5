@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>あちゃーひダイス</title>
+    <title>あちゃダイス</title>
     <style>
         body {
             margin: 0;
@@ -905,7 +905,7 @@
             {
                 id: 'dont_mind_salvation',
                 name: '、、、どんまい',
-                desc: '運がない',
+                desc: '８０回連続であちゃーひが出ない',
                 icon: 'achahi.png',
                 rank: 'silver',
                 checkUnlocked: (stats) => stats.unlockedSalvation === true
@@ -1441,7 +1441,7 @@
 
             setTimeout(() => {
                 if (rollSessionId !== currentSessionId) return;
-                line1.textContent = "８０回連続でなかったん？";
+                line1.textContent = "８０回連続で出なかったん？";
                 line1.classList.add('show');
             }, 7500);
 
@@ -1643,7 +1643,7 @@
             resultDiv.classList.add('fade-out');
             btn.classList.add('fade-out');
 
-            statusDiv.textContent = 'いざ、尋常...！';
+            statusDiv.textContent = 'いざ、尋常に...';
             setCameraPos(0, 6, 9, 1600, 0, 0, 0);
 
             diceArray.forEach((dice, index) => {
@@ -1675,7 +1675,7 @@
 
             setTimeout(() => {
                 if (rollSessionId !== currentSessionId) return;
-                statusDiv.textContent = '壺皿の中で交錯！';
+                statusDiv.textContent = '壺皿の中であちゃあちゃ';
                 setCameraPos(2.5, 1.2, 2.5, 1200, 0, 0, 0);
             }, 3000);
 
@@ -1905,7 +1905,7 @@
                         achaBanner.classList.remove('flow-acha');
 
                         if (isSalvationTriggered) {
-                            statusDiv.textContent = '🎉 奇跡の救済演出！あちゃーひ！ 🎉';
+                            statusDiv.textContent = '  私  た  ち  は  何  も  見  て  い  な  い  ';
                         } else if (Object.keys(correctionTargets).length > 0) {
                             statusDiv.textContent = '✨ 謎の力でさいころが動いた……！ ✨';
                         } else {
