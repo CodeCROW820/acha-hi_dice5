@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>あちゃーひダイス</title>
+    <title>あちゃダイス</title>
     <style>
         body {
             margin: 0;
@@ -90,6 +90,122 @@
             opacity: 0.3;
         }
 
+        /* サウンド設定ボタン（右上） */
+        #sound-config-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1.2rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        #sound-config-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05);
+        }
+
+        /* サウンド設定ポップアップウィンドウ */
+        #sound-modal {
+            position: absolute;
+            top: 65px;
+            right: 20px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 15px 20px;
+            border-radius: 12px;
+            z-index: 200;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            min-width: 200px;
+        }
+
+        #sound-modal.open {
+            display: flex;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #ddd;
+        }
+
+        .setting-row.sub {
+            padding-left: 10px;
+            font-size: 0.85rem;
+            color: #bbb;
+        }
+
+        .setting-row.column {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .setting-row.column input[type="range"] {
+            width: 100%;
+            accent-color: #e74c3c;
+            cursor: pointer;
+        }
+
+        /* トグルスイッチのスタイル */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 22px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #555;
+            transition: 0.3s;
+            border-radius: 22px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #e74c3c;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(18px);
+        }
+
         /* 統計情報の表示エリア */
         #stats-board {
             display: flex;
@@ -153,7 +269,6 @@
             }
         }
 
-        /* 特別演出用ストーリーテキストオーバーレイ（背後に黒帯付き） */
         #story-overlay {
             position: absolute;
             top: 37.5vh;
@@ -194,9 +309,39 @@
 </head>
 <body>
 
+    <!-- 右上サウンド設定ボタン ＆ ウィンドウ -->
+    <button id="sound-config-btn" title="サウンド設定">⚙️</button>
+    <div id="sound-modal">
+        <div class="setting-row column">
+            <span>全体音量: <span id="master-vol-val">100</span>%</span>
+            <input type="range" id="master-volume" min="0" max="100" value="100">
+        </div>
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 2px 0;">
+        <div class="setting-row">
+            <span>BGM</span>
+            <label class="switch">
+                <input type="checkbox" id="toggle-bgm" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="setting-row sub">
+            <span>┗ 通常BGMだけ</span>
+            <label class="switch">
+                <input type="checkbox" id="toggle-normal-bgm" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="setting-row">
+            <span>ボイス</span>
+            <label class="switch">
+                <input type="checkbox" id="toggle-voice" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
     <div id="acha-banner">ACHA</div>
 
-    <!-- 特別演出用テキストオーバーレイ -->
     <div id="story-overlay">
         <div id="line-1" class="story-line">あちゃーひはずっと見ていた</div>
         <div id="line-2" class="story-line">ただただ、、、ずっと見ていた</div>
@@ -208,7 +353,6 @@
         <div id="result">【 あ ち ゃ ー ひ 】</div>
         <button id="roll-btn">壺皿に投げる</button>
         
-        <!-- 統計データ表示ボード -->
         <div id="stats-board">
             <div class="stat-item">試行回数: <span id="stat-total">0</span></div>
             <div class="stat-item">あちゃ回数: <span id="stat-acha">0 (0.0%)</span></div>
@@ -219,8 +363,76 @@
     </div>
 
     <script>
-        const BGM_VOL_NORMAL = 0.9;
-        const BGM_VOL_DUCK = 0.2;
+        // サウンド設定の状態管理
+        const soundSettings = {
+            masterVolume: 1.0,
+            bgm: true,
+            normalBgm: true,
+            voice: true
+        };
+
+        const configBtn = document.getElementById('sound-config-btn');
+        const soundModal = document.getElementById('sound-modal');
+        const masterVolumeInput = document.getElementById('master-volume');
+        const masterVolVal = document.getElementById('master-vol-val');
+        const toggleBgm = document.getElementById('toggle-bgm');
+        const toggleNormalBgm = document.getElementById('toggle-normal-bgm');
+        const toggleVoice = document.getElementById('toggle-voice');
+
+        configBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            soundModal.classList.toggle('open');
+        });
+
+        window.addEventListener('click', (e) => {
+            if (!soundModal.contains(e.target) && e.target !== configBtn) {
+                soundModal.classList.remove('open');
+            }
+        });
+
+        // 全体音量スライダーのイベント処理
+        masterVolumeInput.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            soundSettings.masterVolume = val / 100;
+            masterVolVal.textContent = val;
+
+            // 再生中のオーディオの音量を即時反映
+            const currentBGM = (!rollAudio.paused) ? rollAudio : (!winAudio.paused) ? winAudio : null;
+            if (currentBGM) {
+                currentBGM.volume = soundSettings.masterVolume;
+            }
+        });
+
+        // トグルのイベント処理
+        toggleBgm.addEventListener('change', (e) => {
+            soundSettings.bgm = e.target.checked;
+            if (!soundSettings.bgm) {
+                soundSettings.normalBgm = false;
+                toggleNormalBgm.checked = false;
+                rollAudio.pause();
+                winAudio.pause();
+            } else {
+                soundSettings.normalBgm = true;
+                toggleNormalBgm.checked = true;
+            }
+        });
+
+        toggleNormalBgm.addEventListener('change', (e) => {
+            soundSettings.normalBgm = e.target.checked;
+            if (soundSettings.normalBgm) {
+                soundSettings.bgm = true;
+                toggleBgm.checked = true;
+            } else {
+                rollAudio.pause();
+            }
+        });
+
+        toggleVoice.addEventListener('change', (e) => {
+            soundSettings.voice = e.target.checked;
+        });
+
+        const BGM_VOL_NORMAL = () => soundSettings.masterVolume;
+        const BGM_VOL_DUCK = () => soundSettings.masterVolume * 0.3;
 
         const rollAudio = new Audio('roll.mp3');
         const winAudio = new Audio('win.mp3');
@@ -238,7 +450,7 @@
         
         let bgmFadeTimer = null;
         let soundMonitor = null;
-        let targetBGMVolume = BGM_VOL_NORMAL;
+        let targetBGMVolume = () => soundSettings.masterVolume;
 
         const stats = JSON.parse(localStorage.getItem('achaDiceStats')) || {
             total: 0,
@@ -250,21 +462,18 @@
 
         function updateStatsUI() {
             document.getElementById('stat-total').textContent = stats.total;
-
             const calcRate = (count) => stats.total === 0 ? '0.0%' : ((count / stats.total) * 100).toFixed(1) + '%';
-
             document.getElementById('stat-acha').textContent = `${stats.acha} (${calcRate(stats.acha)})`;
             document.getElementById('stat-achader').textContent = `${stats.achaDash} (${calcRate(stats.achaDash)})`;
             document.getElementById('stat-achahi').textContent = `${stats.achaHi} (${calcRate(stats.achaHi)})`;
             document.getElementById('stat-max').textContent = `${stats.achaDashHi} (${calcRate(stats.achaDashHi)})`;
-
             localStorage.setItem('achaDiceStats', JSON.stringify(stats));
         }
 
         updateStatsUI();
 
-        function setTargetBGMVolume(targetVol) {
-            targetBGMVolume = targetVol;
+        function setTargetBGMVolume(targetVolFunc) {
+            targetBGMVolume = targetVolFunc;
             clearInterval(bgmFadeTimer);
 
             bgmFadeTimer = setInterval(() => {
@@ -277,16 +486,19 @@
                     return;
                 }
 
-                if (Math.abs(activeBGM.volume - targetBGMVolume) < 0.05) {
-                    activeBGM.volume = targetBGMVolume;
+                const currentTarget = typeof targetBGMVolume === 'function' ? targetBGMVolume() : targetBGMVolume;
+
+                if (Math.abs(activeBGM.volume - currentTarget) < 0.05) {
+                    activeBGM.volume = currentTarget;
                     clearInterval(bgmFadeTimer);
                 } else {
-                    activeBGM.volume += (targetBGMVolume > activeBGM.volume) ? 0.05 : -0.05;
+                    activeBGM.volume += (currentTarget > activeBGM.volume) ? 0.05 : -0.05;
                 }
             }, 30);
         }
 
         function playSFXWithDucking(sfxKey) {
+            if (!soundSettings.voice) return;
             const sfx = soundEffects[sfxKey];
             if (!sfx) return;
 
@@ -294,6 +506,7 @@
             setTargetBGMVolume(BGM_VOL_DUCK);
 
             sfx.currentTime = 0;
+            sfx.volume = soundSettings.masterVolume;
             sfx.play().catch(e => console.log(`${sfxKey} 再生エラー:`, e));
 
             soundMonitor = setInterval(() => {
@@ -305,6 +518,7 @@
         }
 
         function startRollBGM() {
+            if (!soundSettings.bgm || !soundSettings.normalBgm) return;
             clearInterval(rollFadeTimer);
             clearInterval(winFadeTimer);
 
@@ -313,7 +527,7 @@
 
             targetBGMVolume = BGM_VOL_NORMAL;
             rollAudio.currentTime = 0;
-            rollAudio.volume = BGM_VOL_NORMAL;
+            rollAudio.volume = soundSettings.masterVolume;
             rollAudio.play().catch(e => console.log('オーディオ再生エラー:', e));
         }
 
@@ -331,31 +545,32 @@
                 }
             }, 100);
 
-            if (isMaxCombo) {
+            if (isMaxCombo && soundSettings.bgm) {
                 winAudio.currentTime = 0;
                 winAudio.volume = 0;
                 targetBGMVolume = BGM_VOL_NORMAL;
                 winAudio.play().catch(e => console.log('オーディオ再生エラー:', e));
 
                 winFadeTimer = setInterval(() => {
-                    if (winAudio.volume < (BGM_VOL_NORMAL - 0.05)) {
+                    const targetVol = soundSettings.masterVolume;
+                    if (winAudio.volume < (targetVol - 0.05)) {
                         winAudio.volume += 0.05;
                     } else {
-                        winAudio.volume = BGM_VOL_NORMAL;
+                        winAudio.volume = targetVol;
                         clearInterval(winFadeTimer);
                     }
                 }, 100);
             }
         }
 
-        // 特別演出用のあちゃひBGM再生部も正常にターゲット音量と同期
         let achaBgmTimer = null;
         function startAchaHiBGM() {
+            if (!soundSettings.bgm) return;
             clearTimeout(achaBgmTimer);
             achaBgmTimer = setTimeout(() => {
-                if (winAudio.paused) {
+                if (winAudio.paused && soundSettings.bgm) {
                     winAudio.currentTime = 0;
-                    winAudio.volume = BGM_VOL_NORMAL;
+                    winAudio.volume = soundSettings.masterVolume;
                     targetBGMVolume = BGM_VOL_NORMAL;
                     winAudio.play().catch(e => console.log('あちゃひBGM再生エラー:', e));
                 }
@@ -373,21 +588,12 @@
             { vector: new THREE.Vector3(0, 0, -1), charIndex: 5 }
         ];
 
-        const targetRotations = {
-            'ゃ': { x: 0,              y: 0, z: 0 },
-            'ー': { x: Math.PI,        y: 0, z: 0 },
-            'ち': { x: 0,              y: 0, z: -Math.PI / 2 },
-            'あ': { x: 0,              y: 0, z: Math.PI / 2 },
-            'ひ': { x: -Math.PI / 2,  y: 0, z: 0 },
-            'ほ': { x: Math.PI / 2,   y: 0, z: 0 }
-        };
-
         const faceRotations = [
-            { x: 0,              y: 0,              z: -Math.PI / 2 },
-            { x: 0,              y: 0,              z: Math.PI / 2 },
-            { x: 0,              y: 0,              z: 0 },
-            { x: Math.PI,        y: 0,              z: 0 },
-            { x: -Math.PI / 2,  y: 0,              z: 0 }
+            { x: 0,             y: 0,             z: -Math.PI / 2 },
+            { x: 0,             y: 0,             z: Math.PI / 2 },
+            { x: 0,             y: 0,             z: 0 },
+            { x: Math.PI,       y: 0,             z: 0 },
+            { x: -Math.PI / 2,  y: 0,             z: 0 }
         ];
 
         const container = document.getElementById('canvas-container');
@@ -415,7 +621,6 @@
         redLight.position.set(-3, 2, -3);
         scene.add(redLight);
 
-        // 壺皿
         const points = [];
         for (let i = 0; i <= 20; i++) {
             const t = i / 20;
@@ -442,7 +647,6 @@
         rim.position.y = 1.3;
         scene.add(rim);
 
-        // X = 500 の位置に achahi.png を1体配置
         const textureLoader = new THREE.TextureLoader();
         textureLoader.load('achahi.png', (texture) => {
             const planeMat = new THREE.MeshStandardMaterial({ 
@@ -462,7 +666,6 @@
             console.error('achahi.png の読み込みに失敗しました:', err);
         });
 
-        // テクスチャ
         function createCharTexture(char) {
             const canvas = document.createElement('canvas');
             canvas.width = 256; canvas.height = 256;
@@ -543,7 +746,7 @@
 
         let isRolling = false;
         let secondShowTimer = null;
-        let showCount = 0; // 巡数カウンター
+        let showCount = 0;
         let cameraTarget = new THREE.Vector3(0, 0, 0);
 
         function setCameraPos(x, y, z, duration, targetX = 0, targetY = 0, targetZ = 0) {
@@ -558,7 +761,6 @@
                 .start();
         }
 
-        // 通常パターンの5カットカメラワーク（約11.4秒）
         function playNormalCameraSequence(onComplete) {
             setCameraPos(0, 7.5, 0.1, 1800, 0, 0, 0);
 
@@ -588,7 +790,6 @@
             }, 11400);
         }
 
-        // 3巡目専用の特別演出カメラワーク
         const line1 = document.getElementById('line-1');
         const line2 = document.getElementById('line-2');
 
@@ -623,7 +824,6 @@
             }, 21500);
         }
 
-        // 巡数に応じてカメラワークを振り分け、無限にループさせる関数
         function playCameraSequence() {
             if (isRolling) return;
 
@@ -642,16 +842,15 @@
 
         function startAchaHiCameraShow(onFirstComplete) {
             clearTimeout(secondShowTimer);
-            showCount = 0; // 成功演出の開始時に巡数をリセット
+            showCount = 0;
 
-            // 1巡目をスタート
             showCount++;
             playNormalCameraSequence(() => {
                 if (onFirstComplete) onFirstComplete();
 
                 if (!isRolling) {
                     secondShowTimer = setTimeout(() => {
-                        playCameraSequence(); // 2巡目以降の無限ループへ
+                        playCameraSequence();
                     }, 2000);
                 }
             });
@@ -754,14 +953,12 @@
                 const hasDash = rawResults.includes('ー');
                 const hasHi   = rawResults.includes('ひ');
 
-                // 試行回数を加算
                 stats.total++;
 
                 let fixedChars = [];
                 let bannerText = '';
                 let isMaxCombo = false;
 
-                // 排他的な役の判定 ＆ 各効果音（acha1〜3）の再生
                 if (hasA && hasChi && hasYa && hasDash && hasHi) {
                     fixedChars = ['あ', 'ち', 'ゃ', 'ー', 'ひ'];
                     bannerText = 'ACHA-HI';
@@ -784,13 +981,11 @@
                     playSFXWithDucking('acha');
                 }
 
-                // ローカルストレージに保存＆UI更新
                 updateStatsUI();
 
                 let finalResults = [];
                 const isSuccess = bannerText !== '';
 
-                // BGMのクロスフェード切替
                 transitionBGM(isMaxCombo);
 
                 if (isSuccess) {
