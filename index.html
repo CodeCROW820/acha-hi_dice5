@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>あちゃダイス</title>
+    <title>あちゃーひダイス</title>
     <style>
         body {
             margin: 0;
@@ -90,10 +90,9 @@
             opacity: 0.3;
         }
 
-        /* サウンド設定ボタン（右上） */
-        #sound-config-btn {
+        /* 右上のコントロール群（歯車と電球） */
+        .top-right-control {
             position: absolute;
-            top: 15px;
             right: 20px;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -110,15 +109,23 @@
             transition: background 0.3s, transform 0.2s;
         }
 
-        #sound-config-btn:hover {
+        .top-right-control:hover {
             background: rgba(255, 255, 255, 0.25);
             transform: scale(1.05);
+        }
+
+        #sound-config-btn {
+            top: 15px;
+        }
+
+        #achievement-btn {
+            top: 65px;
         }
 
         /* サウンド設定ポップアップウィンドウ */
         #sound-modal {
             position: absolute;
-            top: 65px;
+            top: 115px;
             right: 20px;
             background: rgba(20, 20, 20, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -135,6 +142,213 @@
 
         #sound-modal.open {
             display: flex;
+        }
+
+        /* 実績画面の背景ディマー ＆ ウィンドウ */
+        #achievement-dimmer {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            z-index: 300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #achievement-dimmer.open {
+            display: flex;
+            opacity: 1;
+        }
+
+        #achievement-modal {
+            background: rgba(25, 25, 25, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 85vw;
+            max-width: 650px;
+            height: 75vh;
+            max-height: 550px;
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        #achievement-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: #aaa;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+
+        #achievement-close-btn:hover {
+            color: #fff;
+        }
+
+        .achievement-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #f1c40f;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        /* 横3列グリッドレイアウト */
+        .achievement-grid {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            padding-right: 5px;
+        }
+
+        /* 正方形の実績ボックス */
+        .achievement-box {
+            width: 110px;
+            height: 110px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-box.locked {
+            opacity: 0.4;
+            filter: grayscale(100%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .achievement-box.locked:hover {
+            transform: none;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .achievement-box.bronze {
+            border: 2px solid #cd7f32;
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(25, 25, 25, 0.95));
+            box-shadow: 0 0 10px rgba(205, 127, 50, 0.3);
+        }
+        .achievement-box.bronze:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(205, 127, 50, 0.5);
+        }
+
+        .achievement-box.silver {
+            border: 2px solid #c0c0c0;
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.15), rgba(25, 25, 25, 0.95));
+            box-shadow: 0 0 10px rgba(192, 192, 192, 0.3);
+        }
+        .achievement-box.silver:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(192, 192, 192, 0.5);
+        }
+
+        .achievement-box.gold {
+            border: 2px solid #ffd700;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(25, 25, 25, 0.95));
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+        }
+        .achievement-box.gold:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+        }
+
+        .achievement-box img {
+            width: 70%;
+            height: 70%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
+        }
+
+        /* 詳細ポップアップ */
+        #achievement-detail-view {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(20, 20, 20, 0.98);
+            border-radius: 16px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            box-sizing: border-box;
+            text-align: center;
+            z-index: 10;
+        }
+
+        #achievement-detail-view.open {
+            display: flex;
+        }
+
+        .detail-img {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 15px rgba(241, 196, 15, 0.5));
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .detail-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #f1c40f;
+            margin-bottom: 10px;
+        }
+
+        .detail-desc {
+            font-size: 1rem;
+            color: #ddd;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .detail-time {
+            font-size: 0.85rem;
+            color: #aaa;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 6px 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-back-btn {
+            margin-top: 25px;
+            padding: 8px 25px;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        .detail-back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .setting-row {
@@ -163,7 +377,6 @@
             cursor: pointer;
         }
 
-        /* トグルスイッチのスタイル */
         .switch {
             position: relative;
             display: inline-block;
@@ -211,14 +424,14 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 12px;
+            gap: 10px 14px;
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 8px 15px;
             border-radius: 12px;
             font-size: 0.85rem;
             color: #ccc;
-            max-width: 90vw;
+            max-width: 95vw;
         }
 
         .stat-item span {
@@ -252,6 +465,32 @@
                          0 0 50px #ffd700,
                          0 0 90px #ffaa00,
                          0 0 130px #d4af37;
+        }
+
+        #pity-banner {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 
+                -1px -1px 0 #000, 1px -1px 0 #000,
+                -1px  1px 0 #000, 1px  1px 0 #000,
+                0 0 8px rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            z-index: 105;
+            display: none;
+            letter-spacing: 2px;
+        }
+
+        .blink-pity {
+            animation: blinkAnim 1s ease-in-out infinite;
+        }
+
+        @keyframes blinkAnim {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.1; }
         }
 
         .flow-acha {
@@ -302,6 +541,58 @@
         .story-line.show {
             opacity: 1;
         }
+
+        /* 実績解除ポップアップ通知 */
+        #achievement-popup {
+            position: absolute;
+            top: -70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(25, 25, 25, 0.95);
+            border: 1px solid rgba(241, 196, 15, 0.6);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+            z-index: 400;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            backdrop-filter: blur(5px);
+        }
+
+        #achievement-popup.show {
+            top: 20px;
+        }
+
+        #achievement-popup img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 5px rgba(241, 196, 15, 0.5));
+        }
+
+        #achievement-popup .popup-text-wrap {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        #achievement-popup .popup-sub {
+            font-size: 0.75rem;
+            color: #f1c40f;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        #achievement-popup .popup-name {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #fff;
+        }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -309,8 +600,20 @@
 </head>
 <body>
 
-    <!-- 右上サウンド設定ボタン ＆ ウィンドウ -->
-    <button id="sound-config-btn" title="サウンド設定">⚙️</button>
+    <!-- 実績解除ポップアップ通知 -->
+    <div id="achievement-popup">
+        <img id="popup-icon" src="achahi.png" alt="実績アイコン">
+        <div class="popup-text-wrap">
+            <span class="popup-sub">実績解除！</span>
+            <span id="popup-name" class="popup-name">初めの一投</span>
+        </div>
+    </div>
+
+    <!-- 右上コントロール群：歯車（サウンド設定）＆ 電球（実績） -->
+    <button id="sound-config-btn" class="top-right-control" title="サウンド設定">⚙️</button>
+    <button id="achievement-btn" class="top-right-control" title="実績">💡</button>
+
+    <!-- サウンド設定ポップアップウィンドウ -->
     <div id="sound-modal">
         <div class="setting-row column">
             <span>全体音量: <span id="master-vol-val">100</span>%</span>
@@ -340,7 +643,30 @@
         </div>
     </div>
 
+    <!-- 実績ポップアップウィンドウ（背景ディマー付き） -->
+    <div id="achievement-dimmer">
+        <div id="achievement-modal">
+            <button id="achievement-close-btn">&times;</button>
+            <div class="achievement-title">🏆 実績一覧</div>
+            
+            <!-- 横3列のグリッド表示エリア -->
+            <div class="achievement-grid" id="achievement-grid">
+                <!-- JavaScriptで自動生成されます -->
+            </div>
+
+            <!-- クリック時の詳細ビュー -->
+            <div id="achievement-detail-view">
+                <img id="detail-img" class="detail-img" src="" alt="実績アイコン">
+                <div id="detail-name" class="detail-name">実績名</div>
+                <div id="detail-desc" class="detail-desc">実績の達成内容説明</div>
+                <div id="detail-time" class="detail-time">達成日時: 未達成</div>
+                <button class="detail-back-btn" id="detail-back-btn">戻る</button>
+            </div>
+        </div>
+    </div>
+
     <div id="acha-banner">ACHA</div>
+    <div id="pity-banner" class="blink-pity">確定演出ｷﾁｬｰﾋ</div>
 
     <div id="story-overlay">
         <div id="line-1" class="story-line">あちゃーひはずっと見ていた</div>
@@ -353,12 +679,15 @@
         <div id="result">【 あ ち ゃ ー ひ 】</div>
         <button id="roll-btn">壺皿に投げる</button>
         
+        <!-- 統計情報の表示エリア -->
         <div id="stats-board">
             <div class="stat-item">試行回数: <span id="stat-total">0</span></div>
             <div class="stat-item">あちゃ回数: <span id="stat-acha">0 (0.0%)</span></div>
             <div class="stat-item">あちゃー回数: <span id="stat-achader">0 (0.0%)</span></div>
             <div class="stat-item">あちゃひ回数: <span id="stat-achahi">0 (0.0%)</span></div>
             <div class="stat-item">あちゃーひ回数: <span id="stat-max">0 (0.0%)</span></div>
+            <div class="stat-item">あちゃ連続(現在): <span id="stat-streak-curr">0</span></div>
+            <div class="stat-item">あちゃ連続(最高): <span id="stat-streak-max">0</span></div>
         </div>
     </div>
 
@@ -379,9 +708,87 @@
         const toggleNormalBgm = document.getElementById('toggle-normal-bgm');
         const toggleVoice = document.getElementById('toggle-voice');
 
+        // 実績ウィンドウ関連の要素
+        const achievementBtn = document.getElementById('achievement-btn');
+        const achievementDimmer = document.getElementById('achievement-dimmer');
+        const achievementCloseBtn = document.getElementById('achievement-close-btn');
+        const achievementGrid = document.getElementById('achievement-grid');
+        const achievementDetailView = document.getElementById('achievement-detail-view');
+        const detailImg = document.getElementById('detail-img');
+        const detailName = document.getElementById('detail-name');
+        const detailDesc = document.getElementById('detail-desc');
+        const detailTime = document.getElementById('detail-time');
+        const detailBackBtn = document.getElementById('detail-back-btn');
+
+        // 実績解除ポップアップ用要素 ＆ キュー管理
+        const achievementPopup = document.getElementById('achievement-popup');
+        const popupIcon = document.getElementById('popup-icon');
+        const popupName = document.getElementById('popup-name');
+        
+        const piconAudio = new Audio('picon.mp3');
+        const chonAudio = new Audio('chon.mp3');
+
+        let achievementQueue = [];
+        let isPopupShowing = false;
+
+        function processAchievementQueue() {
+            if (isPopupShowing || achievementQueue.length === 0) return;
+
+            isPopupShowing = true;
+            const currentAch = achievementQueue.shift();
+
+            popupName.textContent = currentAch.name;
+            popupIcon.src = currentAch.icon;
+            
+            if (soundSettings.voice && soundSettings.masterVolume > 0) {
+                piconAudio.currentTime = 0;
+                piconAudio.volume = soundSettings.masterVolume;
+                piconAudio.play().catch(e => console.log('picon.mp3 再生エラー:', e));
+            }
+
+            achievementPopup.classList.add('show');
+
+            setTimeout(() => {
+                achievementPopup.classList.remove('show');
+                setTimeout(() => {
+                    isPopupShowing = false;
+                    processAchievementQueue();
+                }, 400);
+            }, 3500);
+        }
+
+        function queueAchievementPopup(achName, achIcon) {
+            achievementQueue.push({ name: achName, icon: achIcon });
+            processAchievementQueue();
+        }
+
         configBtn.addEventListener('click', (e) => {
             e.stopPropagation();
+            achievementDimmer.classList.remove('open');
             soundModal.classList.toggle('open');
+        });
+
+        achievementBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            soundModal.classList.remove('open');
+            renderAchievements();
+            achievementDimmer.classList.add('open');
+        });
+
+        const closeAchievementModal = () => {
+            achievementDimmer.classList.remove('open');
+            achievementDetailView.classList.remove('open');
+        };
+
+        achievementCloseBtn.addEventListener('click', closeAchievementModal);
+        detailBackBtn.addEventListener('click', () => {
+            achievementDetailView.classList.remove('open');
+        });
+
+        achievementDimmer.addEventListener('click', (e) => {
+            if (e.target === achievementDimmer) {
+                closeAchievementModal();
+            }
         });
 
         window.addEventListener('click', (e) => {
@@ -390,25 +797,23 @@
             }
         });
 
-        // 全体音量スライダーのイベント処理
         masterVolumeInput.addEventListener('input', (e) => {
             const val = parseInt(e.target.value);
             soundSettings.masterVolume = val / 100;
             masterVolVal.textContent = val;
 
-            const currentBGM = (!rollAudio.paused) ? rollAudio : (!winAudio.paused) ? winAudio : null;
+            const currentBGM = getActiveRollAudio() || (!winAudio.paused ? winAudio : null);
             if (currentBGM) {
                 currentBGM.volume = soundSettings.masterVolume;
             }
         });
 
-        // トグルのイベント処理
         toggleBgm.addEventListener('change', (e) => {
             soundSettings.bgm = e.target.checked;
             if (!soundSettings.bgm) {
                 soundSettings.normalBgm = false;
                 toggleNormalBgm.checked = false;
-                rollAudio.pause();
+                stopAllRollAudio();
                 winAudio.pause();
             } else {
                 soundSettings.normalBgm = true;
@@ -422,7 +827,7 @@
                 soundSettings.bgm = true;
                 toggleBgm.checked = true;
             } else {
-                rollAudio.pause();
+                stopAllRollAudio();
             }
         });
 
@@ -433,9 +838,13 @@
         const BGM_VOL_NORMAL = () => soundSettings.masterVolume;
         const BGM_VOL_DUCK = () => soundSettings.masterVolume * 0.3;
 
-        const rollAudio = new Audio('roll.mp3');
+        const rollAudios = {
+            1: new Audio('roll.mp3'),
+            3: new Audio('roll3.mp3')
+        };
+        Object.values(rollAudios).forEach(audio => audio.loop = true);
+
         const winAudio = new Audio('win.mp3');
-        rollAudio.loop = true;
         winAudio.loop = true;
 
         const soundEffects = {
@@ -451,19 +860,208 @@
         let soundMonitor = null;
         let targetBGMVolume = () => soundSettings.masterVolume;
 
+        function getActiveRollAudio() {
+            for (let key of [1, 3]) {
+                if (!rollAudios[key].paused && rollAudios[key].currentTime > 0) {
+                    return rollAudios[key];
+                }
+            }
+            return null;
+        }
+
+        function stopAllRollAudio() {
+            Object.values(rollAudios).forEach(audio => {
+                audio.pause();
+                audio.currentTime = 0;
+            });
+        }
+
+        // 実績定義
+        const achievementsList = [
+            {
+                id: 'first_roll',
+                name: '初めの一投',
+                desc: '初めてダイスを振る',
+                icon: 'achahi.png',
+                rank: 'bronze',
+                checkUnlocked: (stats) => stats.total >= 1
+            },
+            {
+                id: 'achahi_special',
+                name: 'あちゃーひ',
+                desc: 'あちゃーひを出す',
+                icon: 'achahi.png',
+                rank: 'bronze',
+                checkUnlocked: (stats) => stats.achaDashHi >= 1
+            },
+            {
+                id: 'kakuzen_fever',
+                name: 'つまりこれは、ひょっとして、確変ってやつ～!?',
+                desc: '確定演出を見る',
+                icon: 'achahi.png',
+                rank: 'silver',
+                checkUnlocked: (stats) => stats.unlockedKakuzenFever === true
+            },
+            {
+                id: 'dont_mind_salvation',
+                name: '、、、どんまい',
+                desc: '運がない',
+                icon: 'achahi.png',
+                rank: 'silver',
+                checkUnlocked: (stats) => stats.unlockedSalvation === true
+            },
+            {
+                id: 'acha_three_times',
+                name: 'ｱﾁｬｱﾁｬうるせぇ',
+                desc: 'あちゃを３回連続で出す',
+                icon: 'achahi.png',
+                rank: 'silver',
+                checkUnlocked: (stats) => stats.unlockedAchaThreeTimes === true
+            },
+            {
+                id: 'acha_master_100',
+                name: 'あちゃマスター',
+                desc: 'あちゃが合計１００回出る',
+                icon: 'achahi.png',
+                rank: 'silver',
+                checkUnlocked: (stats) => (stats.acha + stats.achaDash + stats.achaHi + stats.achaDashHi) >= 100
+            },
+            {
+                id: 'dice_master_500',
+                name: 'ダイスマスター',
+                desc: 'ダイスを５００回振った',
+                icon: 'achahi.png',
+                rank: 'silver',
+                checkUnlocked: (stats) => stats.total >= 500
+            },
+            {
+                id: 'pokemon_master_500',
+                name: '目指すならポケモンマスター',
+                desc: 'あちゃが合計５００回出る',
+                icon: 'achahi.png',
+                rank: 'gold',
+                checkUnlocked: (stats) => (stats.acha + stats.achaDash + stats.achaHi + stats.achaDashHi) >= 500
+            },
+            {
+                id: 'study_more_1000',
+                name: '暇なんか勉強しろ',
+                desc: 'ダイスを１０００回振った',
+                icon: 'achahi.png',
+                rank: 'gold',
+                checkUnlocked: (stats) => stats.total >= 1000
+            },
+            {
+                id: 'acha_acha_achahi',
+                name: 'あちゃあちゃあちゃひ',
+                desc: 'あちゃあちゃあちゃひ',
+                icon: 'achahi.png',
+                rank: 'gold',
+                checkUnlocked: (stats) => stats.unlockedAchaAchahi === true
+            },
+            {
+                id: 'cheat_achahi_twice',
+                name: 'え？チート？',
+                desc: 'あちゃーひを２回連続で出す',
+                icon: 'achahi.png',
+                rank: 'gold',
+                checkUnlocked: (stats) => stats.unlockedCheatTwice === true
+            },
+            {
+                id: 'smash_illusion',
+                name: 'その幻想をぶち壊す！',
+                desc: '確定演出をぶち壊す',
+                icon: 'achahi.png',
+                rank: 'gold',
+                checkUnlocked: (stats) => stats.unlockedSmashIllusion === true
+            }
+        ];
+
         const stats = JSON.parse(localStorage.getItem('achaDiceStats')) || {
             total: 0,
             acha: 0,
             achaDash: 0,
             achaHi: 0,
-            achaDashHi: 0
+            achaDashHi: 0,
+            streakCurr: 0,
+            streakMax: 0,
+            notAchaStreak: 0,
+            buffCount: 0,
+            achaStreak: 0,
+            achahiStreak: 0,
+            notAchahiStreak: 0,
+            unlockedKakuzenFever: false,
+            unlockedSalvation: false,
+            unlockedAchaThreeTimes: false,
+            unlockedAchaAchahi: false,
+            unlockedCheatTwice: false,
+            unlockedSmashIllusion: false,
+            unlockedAchievements: {}
         };
+        if (stats.streakCurr === undefined) stats.streakCurr = 0;
+        if (stats.streakMax === undefined) stats.streakMax = 0;
+        if (stats.notAchaStreak === undefined) stats.notAchaStreak = 0;
+        if (stats.buffCount === undefined) stats.buffCount = 0;
+        if (stats.achaStreak === undefined) stats.achaStreak = 0;
+        if (stats.achahiStreak === undefined) stats.achahiStreak = 0;
+        if (stats.notAchahiStreak === undefined) stats.notAchahiStreak = 0;
+        if (stats.unlockedKakuzenFever === undefined) stats.unlockedKakuzenFever = false;
+        if (stats.unlockedSalvation === undefined) stats.unlockedSalvation = false;
+        if (stats.unlockedAchaThreeTimes === undefined) stats.unlockedAchaThreeTimes = false;
+        if (stats.unlockedAchaAchahi === undefined) stats.unlockedAchaAchahi = false;
+        if (stats.unlockedCheatTwice === undefined) stats.unlockedCheatTwice = false;
+        if (stats.unlockedSmashIllusion === undefined) stats.unlockedSmashIllusion = false;
+        if (stats.unlockedAchievements === undefined) stats.unlockedAchievements = {};
+
+        function checkAndUnlockAchievements() {
+            const now = new Date();
+            const formattedTime = `${now.getFullYear()}年${String(now.getMonth() + 1).padStart(2, '0')}月${String(now.getDate()).padStart(2, '0')}日 ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            achievementsList.forEach(ach => {
+                if (!stats.unlockedAchievements[ach.id] && ach.checkUnlocked(stats)) {
+                    stats.unlockedAchievements[ach.id] = formattedTime;
+                    queueAchievementPopup(ach.name, ach.icon);
+                }
+            });
+            localStorage.setItem('achaDiceStats', JSON.stringify(stats));
+        }
+
+        function renderAchievements() {
+            checkAndUnlockAchievements();
+            achievementGrid.innerHTML = '';
+
+            achievementsList.forEach(ach => {
+                const unlockedTime = stats.unlockedAchievements[ach.id];
+                const isUnlocked = !!unlockedTime;
+
+                const box = document.createElement('div');
+                box.className = `achievement-box ${isUnlocked ? ach.rank : 'locked'}`;
+                
+                const img = document.createElement('img');
+                img.src = ach.icon;
+                img.alt = isUnlocked ? ach.name : '???';
+                box.appendChild(img);
+
+                box.addEventListener('click', () => {
+                    detailImg.src = ach.icon;
+                    detailDesc.textContent = ach.desc;
+                    if (isUnlocked) {
+                        detailName.textContent = ach.name;
+                        detailTime.textContent = `達成日時: ${unlockedTime}`;
+                    } else {
+                        detailName.textContent = '???';
+                        detailTime.textContent = '達成日時: 未達成';
+                    }
+                    achievementDetailView.classList.add('open');
+                });
+
+                achievementGrid.appendChild(box);
+            });
+        }
 
         function updateStatsUI() {
             document.getElementById('stat-total').textContent = stats.total;
             const calcRate = (count) => stats.total === 0 ? '0.0%' : ((count / stats.total) * 100).toFixed(1) + '%';
 
-            // 表示用に合算して計算・出力
             const totalAcha = stats.acha + stats.achaDash + stats.achaHi + stats.achaDashHi;
             const totalAchaDash = stats.achaDash + stats.achaDashHi;
             const totalAchaHi = stats.achaHi + stats.achaDashHi;
@@ -474,7 +1072,10 @@
             document.getElementById('stat-achahi').textContent = `${totalAchaHi} (${calcRate(totalAchaHi)})`;
             document.getElementById('stat-max').textContent = `${totalAchaDashHi} (${calcRate(totalAchaDashHi)})`;
 
-            localStorage.setItem('achaDiceStats', JSON.stringify(stats));
+            document.getElementById('stat-streak-curr').textContent = stats.streakCurr;
+            document.getElementById('stat-streak-max').textContent = stats.streakMax;
+
+            checkAndUnlockAchievements();
         }
 
         updateStatsUI();
@@ -484,9 +1085,8 @@
             clearInterval(bgmFadeTimer);
 
             bgmFadeTimer = setInterval(() => {
-                let activeBGM = null;
-                if (!rollAudio.paused && rollAudio.currentTime > 0) activeBGM = rollAudio;
-                if (!winAudio.paused && winAudio.currentTime > 0) activeBGM = winAudio;
+                let activeBGM = getActiveRollAudio();
+                if (!activeBGM && !winAudio.paused && winAudio.currentTime > 0) activeBGM = winAudio;
 
                 if (!activeBGM) {
                     clearInterval(bgmFadeTimer);
@@ -524,49 +1124,58 @@
             }, 100);
         }
 
-        function startRollBGM() {
+        function startRollBGM(isSpecialActive) {
             if (!soundSettings.bgm || !soundSettings.normalBgm) return;
             clearInterval(rollFadeTimer);
             clearInterval(winFadeTimer);
 
             winAudio.pause();
             winAudio.currentTime = 0;
+            stopAllRollAudio();
 
+            let rollKey = isSpecialActive ? 3 : 1;
+
+            const targetAudio = rollAudios[rollKey];
             targetBGMVolume = BGM_VOL_NORMAL;
-            rollAudio.currentTime = 0;
-            rollAudio.volume = soundSettings.masterVolume;
-            rollAudio.play().catch(e => console.log('オーディオ再生エラー:', e));
+            targetAudio.currentTime = 0;
+            targetAudio.volume = soundSettings.masterVolume;
+            targetAudio.play().catch(e => console.log('オーディオ再生エラー:', e));
         }
 
         function transitionBGM(isMaxCombo) {
             clearInterval(rollFadeTimer);
             clearInterval(winFadeTimer);
 
-            rollFadeTimer = setInterval(() => {
-                if (rollAudio.volume > 0.05) {
-                    rollAudio.volume -= 0.05;
-                } else {
-                    rollAudio.volume = 0;
-                    rollAudio.pause();
-                    clearInterval(rollFadeTimer);
-                }
-            }, 100);
-
-            if (isMaxCombo && soundSettings.bgm) {
-                winAudio.currentTime = 0;
-                winAudio.volume = 0;
-                targetBGMVolume = BGM_VOL_NORMAL;
-                winAudio.play().catch(e => console.log('オーディオ再生エラー:', e));
-
-                winFadeTimer = setInterval(() => {
-                    const targetVol = soundSettings.masterVolume;
-                    if (winAudio.volume < (targetVol - 0.05)) {
-                        winAudio.volume += 0.05;
+            const activeRoll = getActiveRollAudio();
+            if (activeRoll) {
+                rollFadeTimer = setInterval(() => {
+                    if (activeRoll.volume > 0.05) {
+                        activeRoll.volume -= 0.05;
                     } else {
-                        winAudio.volume = targetVol;
-                        clearInterval(winFadeTimer);
+                        activeRoll.volume = 0;
+                        activeRoll.pause();
+                        clearInterval(rollFadeTimer);
                     }
                 }, 100);
+            }
+
+            if (isMaxCombo && soundSettings.bgm) {
+                setTimeout(() => {
+                    winAudio.currentTime = 0;
+                    winAudio.volume = 0;
+                    targetBGMVolume = BGM_VOL_NORMAL;
+                    winAudio.play().catch(e => console.log('オーディオ再生エラー:', e));
+
+                    winFadeTimer = setInterval(() => {
+                        const targetVol = soundSettings.masterVolume;
+                        if (winAudio.volume < (targetVol - 0.05)) {
+                            winAudio.volume += 0.05;
+                        } else {
+                            winAudio.volume = targetVol;
+                            clearInterval(winFadeTimer);
+                        }
+                    }, 100);
+                }, 500);
             }
         }
 
@@ -575,13 +1184,13 @@
             if (!soundSettings.bgm) return;
             clearTimeout(achaBgmTimer);
             achaBgmTimer = setTimeout(() => {
-                if (winAudio.paused && soundSettings.bgm) {
+                if (!isRolling && winAudio.paused && soundSettings.bgm) {
                     winAudio.currentTime = 0;
                     winAudio.volume = soundSettings.masterVolume;
                     targetBGMVolume = BGM_VOL_NORMAL;
                     winAudio.play().catch(e => console.log('あちゃひBGM再生エラー:', e));
                 }
-            }, 2000);
+            }, 2500);
         }
 
         const charList = ['ち', 'あ', 'ゃ', 'ー', 'ひ', 'ほ'];
@@ -594,6 +1203,15 @@
             { vector: new THREE.Vector3(0, 0, 1),  charIndex: 4 },
             { vector: new THREE.Vector3(0, 0, -1), charIndex: 5 }
         ];
+
+        const targetRotations = {
+            'ち': { x: 0,             y: 0, z: Math.PI / 2 },
+            'あ': { x: 0,             y: 0, z: -Math.PI / 2 },
+            'ゃ': { x: 0,             y: 0, z: 0 },
+            'ー': { x: Math.PI,         y: 0, z: 0 },
+            'ひ': { x: -Math.PI / 2,    y: 0, z: 0 },
+            'ほ': { x: Math.PI / 2,     y: 0, z: 0 }
+        };
 
         const faceRotations = [
             { x: 0,             y: 0,             z: -Math.PI / 2 },
@@ -752,8 +1370,7 @@
         camera.lookAt(0, 0, 0);
 
         let isRolling = false;
-        let secondShowTimer = null;
-        let showCount = 0;
+        let rollSessionId = 0;
         let cameraTarget = new THREE.Vector3(0, 0, 0);
 
         function setCameraPos(x, y, z, duration, targetX = 0, targetY = 0, targetZ = 0) {
@@ -768,99 +1385,171 @@
                 .start();
         }
 
-        function playNormalCameraSequence(onComplete) {
-            setCameraPos(0, 7.5, 0.1, 1800, 0, 0, 0);
+        const line1 = document.getElementById('line-1');
+        const line2 = document.getElementById('line-2');
+
+        function playNormalCameraSequence(currentSessionId, onComplete) {
+            setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
+                setCameraPos(0, 7.5, 0.1, 1800, 0, 0, 0);
+            }, 0);
 
             setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
                 setCameraPos(-3.8, 1.0, 3.8, 2000, 0, 0, 0);
             }, 1900);
 
             setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
                 setCameraPos(3.5, 3.2, -2.8, 2200, 0, 0, 0);
             }, 4000);
 
             setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
                 const firstDiceX = diceArray[0] ? diceArray[0].position.x : -1.6;
                 setCameraPos(firstDiceX - 0.8, 0.8, 1.8, 1800, firstDiceX, 0, 0);
             }, 6300);
 
             setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
                 setCameraPos(0, 5.5, 8.5, 1800, 0, 0, 0);
             }, 8200);
 
             setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
                 setCameraPos(camResetPos.x, camResetPos.y, camResetPos.z, 1200, 0, 0, 0);
             }, 10100);
 
             setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
                 if (onComplete) onComplete();
             }, 11400);
         }
 
-        const line1 = document.getElementById('line-1');
-        const line2 = document.getElementById('line-2');
-
-        function playAchahiSpecialCameraSequence(onComplete) {
+        function playSalvationCameraSequence(currentSessionId, onComplete) {
             startAchaHiBGM();
 
-            setCameraPos(350, 4.0, 0, 3500, 500, 0, 0);
+            setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
+                setCameraPos(350, 4.0, 0, 3500, 500, 0, 0);
+            }, 0);
 
             setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
                 setCameraPos(460, 2.5, -15, 4000, 500, 0, 0);
             }, 3700);
 
             setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
+                line1.textContent = "８０回連続でなかったん？";
+                line1.classList.add('show');
+            }, 7500);
+
+            setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
+                line2.textContent = "ま？？？";
+                line2.classList.add('show');
+            }, 11000);
+
+            setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
+                line1.classList.remove('show');
+                line2.classList.remove('show');
+            }, 17000);
+
+            setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
+                setCameraPos(camResetPos.x, camResetPos.y, camResetPos.z, 3500, 0, 0, 0);
+            }, 18000);
+
+            setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
+                if (onComplete) onComplete();
+            }, 22000);
+        }
+
+        let achaCameraCount = 0;
+
+        function startAchaHiCameraShow(currentSessionId, isSalvation, onFirstComplete) {
+            achaCameraCount = 1;
+
+            function runLoop() {
+                if (rollSessionId !== currentSessionId) return;
+                if (achaCameraCount === 0) return;
+
+                if (achaCameraCount === 3) {
+                    if (isSalvation) {
+                        playSalvationCameraSequence(currentSessionId, () => {
+                            if (rollSessionId !== currentSessionId) return;
+                            if (achaCameraCount === 0) return;
+                            achaCameraCount++;
+                            runLoop();
+                        });
+                    } else {
+                        playAchahiSpecialCameraSequence(currentSessionId, () => {
+                            if (rollSessionId !== currentSessionId) return;
+                            if (achaCameraCount === 0) return;
+                            achaCameraCount++;
+                            runLoop();
+                        });
+                    }
+                } else {
+                    playNormalCameraSequence(currentSessionId, () => {
+                        if (rollSessionId !== currentSessionId) return;
+                        if (achaCameraCount === 0) return;
+
+                        achaCameraCount++;
+
+                        if (achaCameraCount === 2) {
+                            if (onFirstComplete) onFirstComplete();
+                        }
+
+                        runLoop();
+                    });
+                }
+            }
+
+            runLoop();
+        }
+
+        function playAchahiSpecialCameraSequence(currentSessionId, onComplete) {
+            startAchaHiBGM();
+
+            setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
+                setCameraPos(350, 4.0, 0, 3500, 500, 0, 0);
+            }, 0);
+
+            setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
+                setCameraPos(460, 2.5, -15, 4000, 500, 0, 0);
+            }, 3700);
+
+            setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
                 line1.classList.add('show');
             }, 8000);
 
             setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
                 line2.classList.add('show');
             }, 11500);
 
             setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
                 line1.classList.remove('show');
                 line2.classList.remove('show');
             }, 16500);
 
             setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
                 setCameraPos(camResetPos.x, camResetPos.y, camResetPos.z, 3500, 0, 0, 0);
             }, 17500);
 
             setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
                 if (onComplete) onComplete();
             }, 21500);
-        }
-
-        function playCameraSequence() {
-            if (isRolling) return;
-
-            showCount++;
-            const isSpecial = (showCount === 3);
-            const currentSequence = isSpecial ? playAchahiSpecialCameraSequence : playNormalCameraSequence;
-
-            currentSequence(() => {
-                if (!isRolling) {
-                    secondShowTimer = setTimeout(() => {
-                        playCameraSequence();
-                    }, 2000);
-                }
-            });
-        }
-
-        function startAchaHiCameraShow(onFirstComplete) {
-            clearTimeout(secondShowTimer);
-            showCount = 0;
-
-            showCount++;
-            playNormalCameraSequence(() => {
-                if (onFirstComplete) onFirstComplete();
-
-                if (!isRolling) {
-                    secondShowTimer = setTimeout(() => {
-                        playCameraSequence();
-                    }, 2000);
-                }
-            });
         }
 
         function getTopChar(dice) {
@@ -879,27 +1568,82 @@
             return topChar;
         }
 
+        function kakutei(initialResults) {
+            let requiredChars = ['あ', 'ち', 'ゃ'];
+            let currentChars = [...initialResults];
+            let correctionTargets = {};
+
+            let missingChars = [];
+            requiredChars.forEach(req => {
+                const idx = currentChars.indexOf(req);
+                if (idx !== -1) {
+                    currentChars[idx] = null;
+                } else {
+                    missingChars.push(req);
+                }
+            });
+
+            if (missingChars.length > 0) {
+                let availableIndices = [];
+                currentChars.forEach((c, i) => {
+                    if (c !== null) {
+                        availableIndices.push(i);
+                    }
+                });
+
+                missingChars.forEach(missingChar => {
+                    if (availableIndices.length > 0) {
+                        let targetDiceIdx = availableIndices.shift();
+                        correctionTargets[targetDiceIdx] = missingChar;
+                    }
+                });
+            }
+
+            return correctionTargets;
+        }
+
         const btn = document.getElementById('roll-btn');
         const statusDiv = document.getElementById('status');
         const resultDiv = document.getElementById('result');
         const achaBanner = document.getElementById('acha-banner');
+        const pityBanner = document.getElementById('pity-banner');
+
+        let isSpecialActiveThisRoll = false;
 
         function rollDice() {
             if (isRolling) return;
             isRolling = true;
             btn.disabled = true;
 
-            clearTimeout(secondShowTimer);
+            // 投げるボタンを押した瞬間にテキストを必ずデフォルトに戻す
+            line1.textContent = "あちゃーひはずっと見ていた";
+            line2.textContent = "ただただ、、、ずっと見ていた";
+
+            rollSessionId++;
+            const currentSessionId = rollSessionId;
+
+            achaCameraCount = 0;
+
+            const isMaxBuffActive = false; // デバッグ機能削除に伴い通常化
+            const isPityActive = false;
+            isSpecialActiveThisRoll = false;
+
+            TWEEN.removeAll();
             clearTimeout(achaBgmTimer);
+            achaBanner.style.display = 'none';
+            achaBanner.classList.remove('flow-acha', 'gold-mode');
+            
+            pityBanner.style.display = 'none';
 
-            startRollBGM();
+            line1.classList.remove('show');
+            line2.classList.remove('show');
 
-            achaBanner.style.display = 'block';
+            startRollBGM(isSpecialActiveThisRoll);
 
             resultDiv.classList.add('fade-out');
             btn.classList.add('fade-out');
 
-            statusDiv.textContent = 'いざ、尋常に...！';
+            statusDiv.textContent = 'いざ、尋常...！';
             setCameraPos(0, 6, 9, 1600, 0, 0, 0);
 
             diceArray.forEach((dice, index) => {
@@ -930,19 +1674,19 @@
             });
 
             setTimeout(() => {
-                statusDiv.textContent = '壺皿の中であちゃあちゃ';
+                if (rollSessionId !== currentSessionId) return;
+                statusDiv.textContent = '壺皿の中で交錯！';
                 setCameraPos(2.5, 1.2, 2.5, 1200, 0, 0, 0);
             }, 3000);
 
             setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
                 const HALF_PI = Math.PI / 2;
 
-                diceArray.forEach((dice, index) => {
-                    let targetX, targetY, targetZ;
-
-                    targetX = Math.round(dice.rotation.x / HALF_PI) * HALF_PI;
-                    targetY = Math.round(dice.rotation.y / HALF_PI) * HALF_PI;
-                    targetZ = Math.round(dice.rotation.z / HALF_PI) * HALF_PI;
+                diceArray.forEach((dice) => {
+                    const targetX = Math.round(dice.rotation.x / HALF_PI) * HALF_PI;
+                    const targetY = Math.round(dice.rotation.y / HALF_PI) * HALF_PI;
+                    const targetZ = Math.round(dice.rotation.z / HALF_PI) * HALF_PI;
 
                     new TWEEN.Tween(dice.rotation)
                         .to({ x: targetX, y: targetY, z: targetZ }, 600)
@@ -952,99 +1696,243 @@
             }, 5000);
 
             setTimeout(() => {
+                if (rollSessionId !== currentSessionId) return;
+                const initialResults = diceArray.map(dice => getTopChar(dice));
+
+                let needsCorrection = false;
+                let correctionTargets = {};
+
                 const rawResults = diceArray.map(dice => getTopChar(dice));
+                const hasA_raw    = rawResults.includes('あ');
+                const hasChi_raw  = rawResults.includes('ち');
+                const hasYa_raw   = rawResults.includes('ゃ');
+                const hasDash_raw = rawResults.includes('ー');
+                const hasHi_raw   = rawResults.includes('ひ');
+                const isInitialMaxCombo = (hasA_raw && hasChi_raw && hasYa_raw && hasDash_raw && hasHi_raw);
 
-                const hasA    = rawResults.includes('あ');
-                const hasChi  = rawResults.includes('ち');
-                const hasYa   = rawResults.includes('ゃ');
-                const hasDash = rawResults.includes('ー');
-                const hasHi   = rawResults.includes('ひ');
-
-                stats.total++;
-
-                let fixedChars = [];
-                let bannerText = '';
-                let isMaxCombo = false;
-
-                if (hasA && hasChi && hasYa && hasDash && hasHi) {
-                    fixedChars = ['あ', 'ち', 'ゃ', 'ー', 'ひ'];
-                    bannerText = 'ACHA-HI';
-                    isMaxCombo = true;
-                    stats.achaDashHi++;
-                } else if (hasA && hasChi && hasYa && hasDash) {
-                    fixedChars = ['あ', 'ち', 'ゃ', 'ー'];
-                    bannerText = 'ACHA-';
-                    stats.achaDash++;
-                    playSFXWithDucking('achaDash');
-                } else if (hasA && hasChi && hasYa && hasHi) {
-                    fixedChars = ['あ', 'ち', 'ゃ', 'ひ'];
-                    bannerText = 'ACHAHI';
-                    stats.achaHi++;
-                    playSFXWithDucking('achaHi');
-                } else if (hasA && hasChi && hasYa) {
-                    fixedChars = ['あ', 'ち', 'ゃ'];
-                    bannerText = 'ACHA';
-                    stats.acha++;
-                    playSFXWithDucking('acha');
+                // 【救済演出の判定】notあちゃーひ連続回数 >= 80 かつ 初期結果が「あちゃーひ」ではない(役なし)場合
+                let isSalvationTriggered = false;
+                if (stats.notAchahiStreak >= 80 && !isInitialMaxCombo && !needsCorrection) {
+                    isSalvationTriggered = true;
                 }
 
-                updateStatsUI();
+                if (isSalvationTriggered) {
+                    stopAllRollAudio();
 
-                let finalResults = [];
-                const isSuccess = bannerText !== '';
+                    statusDiv.textContent = '…………';
+                    
+                    setTimeout(() => {
+                        if (rollSessionId !== currentSessionId) return;
 
-                transitionBGM(isMaxCombo);
-
-                if (isSuccess) {
-                    let remainingChars = [...rawResults];
-                    fixedChars.forEach(char => {
-                        const idx = remainingChars.indexOf(char);
-                        if (idx !== -1) {
-                            remainingChars.splice(idx, 1);
+                        if (soundSettings.voice && soundSettings.masterVolume > 0) {
+                            chonAudio.currentTime = 0;
+                            chonAudio.volume = soundSettings.masterVolume;
+                            chonAudio.play().catch(e => console.log('chon.mp3 再生エラー:', e));
                         }
+
+                        const salvationTargets = ['あ', 'ち', 'ゃ', 'ー', 'ひ'];
+                        diceArray.forEach((dice, i) => {
+                            const targetChar = salvationTargets[i];
+                            const rot = targetRotations[targetChar];
+                            new TWEEN.Tween(dice.rotation)
+                                .to({ x: rot.x + Math.PI * 2, y: rot.y + Math.PI * 2, z: rot.z }, 800)
+                                .easing(TWEEN.Easing.Cubic.Out)
+                                .start();
+                        });
+
+                    }, 2000);
+                } else if (Object.keys(correctionTargets).length > 0) {
+                    Object.keys(correctionTargets).forEach(i => {
+                        const dice = diceArray[i];
+                        const targetChar = correctionTargets[i];
+                        const rot = targetRotations[targetChar];
+
+                        new TWEEN.Tween(dice.rotation)
+                            .to({ x: rot.x, y: rot.y, z: rot.z }, 800)
+                            .easing(TWEEN.Easing.Cubic.Out)
+                            .start();
                     });
-                    finalResults = [...fixedChars, ...remainingChars];
-
-                    if (isMaxCombo) {
-                        achaBanner.classList.add('gold-mode');
-                    } else {
-                        achaBanner.classList.remove('gold-mode');
-                    }
-
-                    achaBanner.textContent = bannerText;
-                    achaBanner.classList.remove('flow-acha');
-                    void achaBanner.offsetWidth;
-                    achaBanner.classList.add('flow-acha');
-                } else {
-                    finalResults = rawResults;
                 }
 
-                const displayDelay = isSuccess ? 3500 : 1500;
+                const finalEvalDelay = isSalvationTriggered ? 2800 : ((Object.keys(correctionTargets).length > 0) ? 1000 : 200);
 
                 setTimeout(() => {
-                    achaBanner.style.display = 'none';
-                    achaBanner.classList.remove('flow-acha');
+                    if (rollSessionId !== currentSessionId) return;
+                    
+                    pityBanner.style.display = 'none';
 
-                    statusDiv.textContent = isMaxCombo ? '🎉 完全制覇！あちゃーひ！ 🎉' : '勝負あり！';
-                    resultDiv.textContent = `【 ${finalResults.join(' ')} 】`;
+                    const finalRawResults = diceArray.map(dice => getTopChar(dice));
 
-                    resultDiv.classList.remove('fade-out');
+                    const hasA    = finalRawResults.includes('あ');
+                    const hasChi  = finalRawResults.includes('ち');
+                    const hasYa   = finalRawResults.includes('ゃ');
+                    const hasDash = finalRawResults.includes('ー');
+                    const hasHi   = finalRawResults.includes('ひ');
+
+                    stats.total++;
+
+                    let fixedChars = [];
+                    let bannerText = '';
+                    let isMaxCombo = false;
+                    let isAchahiOnly = false;
+
+                    if (hasA && hasChi && hasYa && hasDash && hasHi) {
+                        fixedChars = ['あ', 'ち', 'ゃ', 'ー', 'ひ'];
+                        bannerText = 'ACHA-HI';
+                        isMaxCombo = true;
+                        stats.achaDashHi++;
+                    } else if (hasA && hasChi && hasYa && hasDash) {
+                        fixedChars = ['あ', 'ち', 'ゃ', 'ー'];
+                        bannerText = 'ACHA-';
+                        stats.achaDash++;
+                        playSFXWithDucking('achaDash');
+                    } else if (hasA && hasChi && hasYa && hasHi) {
+                        fixedChars = ['あ', 'ち', 'ゃ', 'ひ'];
+                        bannerText = 'ACHAHI';
+                        stats.achaHi++;
+                        isAchahiOnly = true;
+                        playSFXWithDucking('achaHi');
+                    } else if (hasA && hasChi && hasYa) {
+                        fixedChars = ['あ', 'ち', 'ゃ'];
+                        bannerText = 'ACHA';
+                        stats.acha++;
+                        playSFXWithDucking('acha');
+                    }
+
+                    const isHit = (bannerText !== '');
+
+                    if (isHit) {
+                        stats.streakCurr++;
+                        if (stats.streakCurr > stats.streakMax) {
+                            stats.streakMax = stats.streakCurr;
+                        }
+                        stats.notAchaStreak = 0;
+
+                        const buffAdd = (bannerText === 'ACHA') ? 1 : 2;
+                        stats.buffCount = Math.min(4, stats.buffCount + buffAdd);
+                    } else {
+                        stats.streakCurr = 0;
+                        stats.notAchaStreak++;
+                        stats.buffCount = 0;
+                    }
+
+                    // --- notあちゃーひ連続回数のカウント処理 ---
+                    if (isMaxCombo) {
+                        stats.notAchahiStreak = 0;
+                    } else {
+                        stats.notAchahiStreak++;
+                    }
+                    // ------------------------------------------
+
+                    // --- 実績「、、、どんまい」の判定（救済演出を見る） ---
+                    if (isSalvationTriggered) {
+                        stats.unlockedSalvation = true;
+                    }
+                    // --------------------------------------------------------
+
+                    // --- 実績「その幻想をぶち壊す！」の判定 ---
+                    if (isSpecialActiveThisRoll && !needsCorrection && isMaxCombo && !isSalvationTriggered) {
+                        stats.unlockedSmashIllusion = true;
+                    }
+                    // ---------------------------------------------
+
+                    // --- 連続系実績の判定 & カウント更新 ---
+                    const isValidAchaStreakHit = (bannerText === 'ACHA' || bannerText === 'ACHA-' || bannerText === 'ACHAHI' || bannerText === 'ACHA-HI');
+                    
+                    if (stats.achaStreak >= 2 && isAchahiOnly) {
+                        stats.unlockedAchaAchahi = true;
+                    }
+
+                    if (stats.achaStreak === 2 && isValidAchaStreakHit) {
+                        stats.unlockedAchaThreeTimes = true;
+                    }
+
+                    if (isValidAchaStreakHit) {
+                        stats.achaStreak++;
+                    } else {
+                        stats.achaStreak = 0;
+                    }
+
+                    if (stats.achahiStreak === 1 && isMaxCombo) {
+                        stats.unlockedCheatTwice = true;
+                    }
 
                     if (isMaxCombo) {
-                        startAchaHiCameraShow(() => {
+                        stats.achahiStreak++;
+                    } else {
+                        stats.achahiStreak = 0;
+                    }
+                    // ----------------------------------------
+
+                    updateStatsUI();
+
+                    let finalResults = [];
+                    const isSuccess = isHit;
+
+                    transitionBGM(isMaxCombo);
+
+                    if (isSuccess) {
+                        let remainingChars = [...finalRawResults];
+                        fixedChars.forEach(char => {
+                            const idx = remainingChars.indexOf(char);
+                            if (idx !== -1) {
+                                remainingChars.splice(idx, 1);
+                            }
+                        });
+                        finalResults = [...fixedChars, ...remainingChars];
+
+                        if (isMaxCombo) {
+                            achaBanner.classList.add('gold-mode');
+                        } else {
+                            achaBanner.classList.remove('gold-mode');
+                        }
+
+                        achaBanner.textContent = bannerText;
+                        achaBanner.style.display = 'block';
+                        achaBanner.classList.remove('flow-acha');
+                        void achaBanner.offsetWidth;
+                        achaBanner.classList.add('flow-acha');
+                    } else {
+                        finalResults = finalRawResults;
+                    }
+
+                    const displayDelay = isSuccess ? 3000 : 1000;
+
+                    setTimeout(() => {
+                        if (rollSessionId !== currentSessionId) return;
+                        
+                        achaBanner.style.display = 'none';
+                        achaBanner.classList.remove('flow-acha');
+
+                        if (isSalvationTriggered) {
+                            statusDiv.textContent = '🎉 奇跡の救済演出！あちゃーひ！ 🎉';
+                        } else if (Object.keys(correctionTargets).length > 0) {
+                            statusDiv.textContent = '✨ 謎の力でさいころが動いた……！ ✨';
+                        } else {
+                            statusDiv.textContent = isMaxCombo ? '🎉 完全制覇！あちゃーひ！ 🎉' : '勝負あり！';
+                        }
+                        resultDiv.textContent = `【 ${finalResults.join(' ')} 】`;
+
+                        resultDiv.classList.remove('fade-out');
+
+                        if (isMaxCombo) {
+                            startAchaHiCameraShow(currentSessionId, isSalvationTriggered, () => {
+                                if (rollSessionId !== currentSessionId) return;
+                                btn.classList.remove('fade-out');
+                                isRolling = false;
+                                btn.disabled = false;
+                            });
+                        } else {
                             btn.classList.remove('fade-out');
                             isRolling = false;
                             btn.disabled = false;
-                        });
-                    } else {
-                        btn.classList.remove('fade-out');
-                        isRolling = false;
-                        btn.disabled = false;
-                    }
+                        }
 
-                }, displayDelay);
+                    }, displayDelay);
 
-            }, 5600);
+                }, finalEvalDelay);
+
+            }, 5800);
         }
 
         function resolveCollisions() {
