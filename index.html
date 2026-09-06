@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>あちゃダイス</title>
+    <title>あちゃーひダイス</title>
     <style>
         body {
             margin: 0;
@@ -905,7 +905,7 @@
             {
                 id: 'dont_mind_salvation',
                 name: '、、、どんまい',
-                desc: '８０回連続であちゃーひが出ない',
+                desc: '運がない',
                 icon: 'achahi.png',
                 rank: 'silver',
                 checkUnlocked: (stats) => stats.unlockedSalvation === true
@@ -1624,9 +1624,18 @@
 
             achaCameraCount = 0;
 
-            const isMaxBuffActive = false; // デバッグ機能削除に伴い通常化
-            const isPityActive = false;
-            isSpecialActiveThisRoll = false;
+            const isMaxBuffActive = (stats.buffCount >= 3);
+            if (isMaxBuffActive) {
+                stats.buffCount = 0;
+                updateStatsUI();
+            }
+
+            const isPityActive = (stats.notAchaStreak >= 8);
+            isSpecialActiveThisRoll = (isMaxBuffActive || isPityActive);
+
+            if (isSpecialActiveThisRoll) {
+                stats.unlockedKakuzenFever = true;
+            }
 
             TWEEN.removeAll();
             clearTimeout(achaBgmTimer);
@@ -1640,10 +1649,14 @@
 
             startRollBGM(isSpecialActiveThisRoll);
 
+            if (isSpecialActiveThisRoll) {
+                pityBanner.style.display = 'block';
+            }
+
             resultDiv.classList.add('fade-out');
             btn.classList.add('fade-out');
 
-            statusDiv.textContent = 'いざ、尋常に...';
+            statusDiv.textContent = 'いざ、尋常...！';
             setCameraPos(0, 6, 9, 1600, 0, 0, 0);
 
             diceArray.forEach((dice, index) => {
@@ -1675,7 +1688,7 @@
 
             setTimeout(() => {
                 if (rollSessionId !== currentSessionId) return;
-                statusDiv.textContent = '壺皿の中であちゃあちゃ';
+                statusDiv.textContent = '壺皿の中で交錯！';
                 setCameraPos(2.5, 1.2, 2.5, 1200, 0, 0, 0);
             }, 3000);
 
@@ -1701,6 +1714,13 @@
 
                 let needsCorrection = false;
                 let correctionTargets = {};
+
+                if (isSpecialActiveThisRoll) {
+                    correctionTargets = kakutei(initialResults);
+                    if (Object.keys(correctionTargets).length > 0) {
+                        needsCorrection = true;
+                    }
+                }
 
                 const rawResults = diceArray.map(dice => getTopChar(dice));
                 const hasA_raw    = rawResults.includes('あ');
@@ -1905,7 +1925,7 @@
                         achaBanner.classList.remove('flow-acha');
 
                         if (isSalvationTriggered) {
-                            statusDiv.textContent = '  私  た  ち  は  何  も  見  て  い  な  い  ';
+                            statusDiv.textContent = '🎉 奇跡の救済演出！あちゃーひ！ 🎉';
                         } else if (Object.keys(correctionTargets).length > 0) {
                             statusDiv.textContent = '✨ 謎の力でさいころが動いた……！ ✨';
                         } else {
