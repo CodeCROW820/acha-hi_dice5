@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D文字サイコロゲーム (5個版)</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #0f0f0f;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 65vh;
+            position: relative;
+        }
+
+        #ui-container {
+            height: 35vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            color: white;
+            position: relative;
+            padding-top: 5px;
+        }
+
+        #status, #result, button {
+            transition: opacity 1.2s ease-in-out, transform 0.4s ease;
+        }
+
+        .fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .fade-in {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #status {
+            font-size: 1.1rem;
+            color: #aaa;
+            height: 1.3rem;
+            margin-bottom: 2px;
+        }
+
+        #result {
+            font-size: 2.0rem;
+            font-weight: bold;
+            color: #f1c40f;
+            margin-bottom: 8px;
+            height: 2.5rem;
+            text-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
+            letter-spacing: 4px;
+        }
+
+        #roll-btn {
+            padding: 10px 35px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+            margin-bottom: 8px;
+        }
+
+        #roll-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.6);
+        }
+
+        #roll-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+            opacity: 0.3;
+        }
+
+        /* 統計情報の表示エリア */
+        #stats-board {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: #ccc;
+            max-width: 90vw;
+        }
+
+        .stat-item span {
+            color: #f1c40f;
+            font-weight: bold;
+            margin-left: 2px;
+        }
+
+        #secret-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #f1c40f;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(241, 196, 15, 0.2);
+            border-radius: 20px;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease, background 0.3s ease, border-color 0.3s ease;
+            z-index: 50;
+        }
+
+        #secret-btn.active {
+            opacity: 0.15;
+            pointer-events: auto;
+        }
+
+        #secret-btn.active:hover {
+            opacity: 0.6;
+            background: rgba(241, 196, 15, 0.15);
+            border-color: rgba(241, 196, 15, 0.5);
+        }
+
+        #secret-btn.pushed {
+            opacity: 0.9;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: #fff;
+            border-color: #f1c40f;
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.6);
+        }
+
+        #acha-banner {
+            position: absolute;
+            top: 37.5vh;
+            transform: translateY(-50%);
+            left: 120vw;
+            white-space: nowrap;
+            font-size: 40vw;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.9), 
+                         0 0 60px rgba(255, 215, 0, 0.9), 
+                         0 0 100px rgba(243, 156, 18, 0.8);
+            pointer-events: none;
+            z-index: 100;
+            letter-spacing: 1vw;
+            opacity: 0;
+            line-height: 1;
+        }
+
+        #acha-banner.gold-mode {
+            color: #fff8d6;
+            text-shadow: 0 0 20px #ffffff,
+                         0 0 50px #ffd700,
+                         0 0 90px #ffaa00,
+                         0 0 130px #d4af37;
+        }
+
+        .flow-acha {
+            animation: flowLeft 3s linear forwards;
+        }
+
+        @keyframes flowLeft {
+            0% {
+                left: 120vw;
+                opacity: 0.95;
+            }
+            100% {
+                left: -250vw;
+                opacity: 0.95;
+            }
+        }
+
+        /* 特別演出用ストーリーテキストオーバーレイ（背後に黒帯付き） */
+        #story-overlay {
+            position: absolute;
+            top: 37.5vh;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 150;
+            text-align: center;
+            width: 100%;
+        }
+
+        .story-line {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            letter-spacing: 3px;
+            opacity: 0;
+            transition: opacity 2.5s ease-in-out;
+            margin: 8px 0;
+            background: rgba(0, 0, 0, 0.55);
+            padding: 10px 30px;
+            border-radius: 8px;
+            backdrop-filter: blur(4px);
+        }
+
+        .story-line.show {
+            opacity: 1;
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+</head>
+<body>
+
+    <div id="acha-banner">ACHA</div>
+
+    <!-- 特別演出用テキストオーバーレイ -->
+    <div id="story-overlay">
+        <div id="line-1" class="story-line">あちゃーひはずっと見ていた</div>
+        <div id="line-2" class="story-line">ただただ、、、ずっと見ていた</div>
+    </div>
+
+    <div id="canvas-container"></div>
+    <div id="ui-container">
+        <div id="status">準備完了</div>
+        <div id="result">【 あ ち ゃ ー ひ 】</div>
+        <button id="roll-btn">壺皿に投げる</button>
+        
+        <!-- 統計データ表示ボード -->
+        <div id="stats-board">
+            <div class="stat-item">試行回数: <span id="stat-total">0</span></div>
+            <div class="stat-item">あちゃ回数: <span id="stat-acha">0 (0.0%)</span></div>
+            <div class="stat-item">あちゃー回数: <span id="stat-achader">0 (0.0%)</span></div>
+            <div class="stat-item">あちゃひ回数: <span id="stat-achahi">0 (0.0%)</span></div>
+            <div class="stat-item">あちゃーひ回数: <span id="stat-max">0 (0.0%)</span></div>
+        </div>
+    </div>
+
+    <button id="secret-btn">あちゃ</button>
+
+    <script>
+        const BGM_VOL_NORMAL = 0.9;
+        const BGM_VOL_DUCK = 0.2; // 効果音再生時のダッキング音量（20%）
+
+        const rollAudio = new Audio('roll.mp3');
+        const winAudio = new Audio('win.mp3');
+        rollAudio.loop = true;
+        winAudio.loop = true;
+
+        // 各役専用の効果音オブジェクト（acha4は除外）
+        const soundEffects = {
+            'acha': new Audio('acha1.mp3'),
+            'achaDash': new Audio('acha2.mp3'),
+            'achaHi': new Audio('acha3.mp3')
+        };
+
+        let rollFadeTimer = null;
+        let winFadeTimer = null;
+        
+        // ダッキング制御用
+        let bgmFadeTimer = null;
+        let soundMonitor = null;
+        let targetBGMVolume = BGM_VOL_NORMAL;
+
+        // ローカルストレージから統計データを読み込み（なければ初期化）
+        const stats = JSON.parse(localStorage.getItem('achaDiceStats')) || {
+            total: 0,
+            acha: 0,
+            achaDash: 0,
+            achaHi: 0,
+            achaDashHi: 0
+        };
+
+        function updateStatsUI() {
+            document.getElementById('stat-total').textContent = stats.total;
+
+            const calcRate = (count) => stats.total === 0 ? '0.0%' : ((count / stats.total) * 100).toFixed(1) + '%';
+
+            document.getElementById('stat-acha').textContent = `${stats.acha} (${calcRate(stats.acha)})`;
+            document.getElementById('stat-achader').textContent = `${stats.achaDash} (${calcRate(stats.achaDash)})`;
+            document.getElementById('stat-achahi').textContent = `${stats.achaHi} (${calcRate(stats.achaHi)})`;
+            document.getElementById('stat-max').textContent = `${stats.achaDashHi} (${calcRate(stats.achaDashHi)})`;
+
+            localStorage.setItem('achaDiceStats', JSON.stringify(stats));
+        }
+
+        updateStatsUI();
+
+        function setTargetBGMVolume(targetVol) {
+            targetBGMVolume = targetVol;
+            clearInterval(bgmFadeTimer);
+
+            bgmFadeTimer = setInterval(() => {
+                let activeBGM = null;
+                if (!rollAudio.paused && rollAudio.currentTime > 0) activeBGM = rollAudio;
+                if (!winAudio.paused && winAudio.currentTime > 0) activeBGM = winAudio;
+
+                if (!activeBGM) {
+                    clearInterval(bgmFadeTimer);
+                    return;
+                }
+
+                if (Math.abs(activeBGM.volume - targetBGMVolume) < 0.05) {
+                    activeBGM.volume = targetBGMVolume;
+                    clearInterval(bgmFadeTimer);
+                } else {
+                    activeBGM.volume += (targetBGMVolume > activeBGM.volume) ? 0.05 : -0.05;
+                }
+            }, 30);
+        }
+
+        function playSFXWithDucking(sfxKey) {
+            const sfx = soundEffects[sfxKey];
+            if (!sfx) return;
+
+            clearInterval(soundMonitor);
+            setTargetBGMVolume(BGM_VOL_DUCK);
+
+            sfx.currentTime = 0;
+            sfx.play().catch(e => console.log(`${sfxKey} 再生エラー:`, e));
+
+            soundMonitor = setInterval(() => {
+                if (sfx.ended || sfx.paused) {
+                    clearInterval(soundMonitor);
+                    setTargetBGMVolume(BGM_VOL_NORMAL);
+                }
+            }, 100);
+        }
+
+        function startRollBGM() {
+            clearInterval(rollFadeTimer);
+            clearInterval(winFadeTimer);
+
+            winAudio.pause();
+            winAudio.currentTime = 0;
+
+            targetBGMVolume = BGM_VOL_NORMAL;
+            rollAudio.currentTime = 0;
+            rollAudio.volume = BGM_VOL_NORMAL;
+            rollAudio.play().catch(e => console.log('オーディオ再生エラー:', e));
+        }
+
+        function transitionBGM(isMaxCombo) {
+            clearInterval(rollFadeTimer);
+            clearInterval(winFadeTimer);
+
+            rollFadeTimer = setInterval(() => {
+                if (rollAudio.volume > 0.05) {
+                    rollAudio.volume -= 0.05;
+                } else {
+                    rollAudio.volume = 0;
+                    rollAudio.pause();
+                    clearInterval(rollFadeTimer);
+                }
+            }, 100);
+
+            if (isMaxCombo) {
+                winAudio.currentTime = 0;
+                winAudio.volume = 0;
+                targetBGMVolume = BGM_VOL_NORMAL;
+                winAudio.play().catch(e => console.log('オーディオ再生エラー:', e));
+
+                winFadeTimer = setInterval(() => {
+                    if (winAudio.volume < (BGM_VOL_NORMAL - 0.05)) {
+                        winAudio.volume += 0.05;
+                    } else {
+                        winAudio.volume = BGM_VOL_NORMAL;
+                        clearInterval(winFadeTimer);
+                    }
+                }, 100);
+            }
+        }
+
+        let achaBgmTimer = null;
+        function startAchaHiBGM() {
+            clearTimeout(achaBgmTimer);
+            achaBgmTimer = setTimeout(() => {
+                winAudio.currentTime = 0;
+                winAudio.volume = 0.9;
+                winAudio.play().catch(e => console.log('あちゃひBGM再生エラー:', e));
+            }, 2000);
+        }
+
+        const charList = ['ち', 'あ', 'ゃ', 'ー', 'ひ', 'ほ'];
+
+        const faceNormals = [
+            { vector: new THREE.Vector3(1, 0, 0),  charIndex: 0 },
+            { vector: new THREE.Vector3(-1, 0, 0), charIndex: 1 },
+            { vector: new THREE.Vector3(0, 1, 0),  charIndex: 2 },
+            { vector: new THREE.Vector3(0, -1, 0), charIndex: 3 },
+            { vector: new THREE.Vector3(0, 0, 1),  charIndex: 4 },
+            { vector: new THREE.Vector3(0, 0, -1), charIndex: 5 }
+        ];
+
+        const targetRotations = {
+            'ゃ': { x: 0,              y: 0, z: 0 },
+            'ー': { x: Math.PI,        y: 0, z: 0 },
+            'ち': { x: 0,              y: 0, z: -Math.PI / 2 },
+            'あ': { x: 0,              y: 0, z: Math.PI / 2 },
+            'ひ': { x: -Math.PI / 2,  y: 0, z: 0 },
+            'ほ': { x: Math.PI / 2,   y: 0, z: 0 }
+        };
+
+        const faceRotations = [
+            { x: 0,              y: 0,              z: -Math.PI / 2 },
+            { x: 0,              y: 0,              z: Math.PI / 2 },
+            { x: 0,              y: 0,              z: 0 },
+            { x: Math.PI,        y: 0,              z: 0 },
+            { x: -Math.PI / 2,  y: 0,              z: 0 }
+        ];
+
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const mainLight = new THREE.DirectionalLight(0xfff5e6, 1.2);
+        mainLight.position.set(5, 12, 8);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 2048;
+        mainLight.shadow.mapSize.height = 2048;
+        scene.add(mainLight);
+
+        const redLight = new THREE.PointLight(0xe74c3c, 0.5, 10);
+        redLight.position.set(-3, 2, -3);
+        scene.add(redLight);
+
+        // 壺皿
+        const points = [];
+        for (let i = 0; i <= 20; i++) {
+            const t = i / 20;
+            const x = Math.sin(t * Math.PI * 0.5) * 4.5;
+            const y = Math.pow(t, 2) * 1.8;
+            points.push(new THREE.Vector2(x, y));
+        }
+        const bowlGeo = new THREE.LatheGeometry(points, 32);
+        const bowlMat = new THREE.MeshStandardMaterial({ 
+            color: 0x111111, 
+            roughness: 0.3, 
+            metalness: 0.1,
+            side: THREE.DoubleSide 
+        });
+        const bowl = new THREE.Mesh(bowlGeo, bowlMat);
+        bowl.position.y = -0.5;
+        bowl.receiveShadow = true;
+        scene.add(bowl);
+
+        const rimGeo = new THREE.TorusGeometry(4.5, 0.08, 16, 100);
+        const rimMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.8, roughness: 0.2 });
+        const rim = new THREE.Mesh(rimGeo, rimMat);
+        rim.rotation.x = Math.PI / 2;
+        rim.position.y = 1.3;
+        scene.add(rim);
+
+        // X = 500 の位置に achahi.png を1体配置
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.load('achahi.png', (texture) => {
+            const planeMat = new THREE.MeshStandardMaterial({ 
+                map: texture, 
+                transparent: true,
+                side: THREE.DoubleSide,
+                roughness: 0.5
+            });
+            const planeGeo = new THREE.PlaneGeometry(1, 1);
+
+            const achahiMesh = new THREE.Mesh(planeGeo, planeMat);
+            achahiMesh.position.set(500.0, 0, 0);
+            achahiMesh.rotation.y = -Math.PI / 2;
+            achahiMesh.scale.set(35.0, 35.0, 35.0);
+            scene.add(achahiMesh);
+        }, undefined, (err) => {
+            console.error('achahi.png の読み込みに失敗しました:', err);
+        });
+
+        // テクスチャ
+        function createCharTexture(char) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#fdfbf7';
+            ctx.fillRect(0, 0, 256, 256);
+            ctx.strokeStyle = '#e0dacf';
+            ctx.lineWidth = 12;
+            ctx.strokeRect(0, 0, 256, 256);
+
+            if (char) {
+                ctx.save();
+                ctx.translate(128, 128);
+
+                if (char === 'ち') {
+                    ctx.rotate(Math.PI / 2);
+                } else if (char === 'あ') {
+                    ctx.rotate(-Math.PI / 2);
+                }
+
+                ctx.fillStyle = (char === 'あ') ? '#c0392b' : '#2c3e50';
+                ctx.font = 'bold 140px "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(char, 0, 10);
+                
+                ctx.restore();
+            }
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        const materialsMap = {};
+        charList.forEach(c => {
+            materialsMap[c] = new THREE.MeshStandardMaterial({ map: createCharTexture(c), roughness: 0.2 });
+        });
+
+        const initPositions = [
+            { x: -1.6, z: 0 },
+            { x: -0.8, z: 0 },
+            { x: 0,    z: 0 },
+            { x: 0.8,  z: 0 },
+            { x: 1.6,  z: 0 }
+        ];
+
+        const diceArray = [];
+        const diceGeo = new THREE.BoxGeometry(0.7, 0.7, 0.7);
+
+        for (let i = 0; i < 5; i++) {
+            const mats = [
+                materialsMap['ち'],
+                materialsMap['あ'],
+                materialsMap['ゃ'],
+                materialsMap['ー'],
+                materialsMap['ひ'],
+                materialsMap['ほ']
+            ];
+            
+            const dice = new THREE.Mesh(diceGeo, mats);
+            dice.castShadow = true;
+            
+            const pos = initPositions[i];
+            dice.position.set(pos.x, -0.15, pos.z);
+
+            scene.add(dice);
+            diceArray.push(dice);
+        }
+
+        diceArray.forEach((dice, i) => {
+            const rot = faceRotations[i];
+            dice.rotation.set(rot.x, rot.y, rot.z);
+        });
+
+        const camResetPos = { x: 0, y: 6, z: 9 };
+        camera.position.set(camResetPos.x, camResetPos.y, camResetPos.z);
+        camera.lookAt(0, 0, 0);
+
+        let isRolling = false;
+        let secretTrickActive = false;
+        let secondShowTimer = null;
+        let showCount = 0; // 巡数カウンター
+        let cameraTarget = new THREE.Vector3(0, 0, 0);
+
+        function setCameraPos(x, y, z, duration, targetX = 0, targetY = 0, targetZ = 0) {
+            new TWEEN.Tween(cameraTarget)
+                .to({ x: targetX, y: targetY, z: targetZ }, duration)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .start();
+
+            return new TWEEN.Tween(camera.position)
+                .to({ x, y, z }, duration)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .start();
+        }
+
+        // 通常パターンの5カットカメラワーク（約11.4秒）
+        function playNormalCameraSequence(onComplete) {
+            setCameraPos(0, 7.5, 0.1, 1800, 0, 0, 0);
+
+            setTimeout(() => {
+                setCameraPos(-3.8, 1.0, 3.8, 2000, 0, 0, 0);
+            }, 1900);
+
+            setTimeout(() => {
+                setCameraPos(3.5, 3.2, -2.8, 2200, 0, 0, 0);
+            }, 4000);
+
+            setTimeout(() => {
+                const firstDiceX = diceArray[0] ? diceArray[0].position.x : -1.6;
+                setCameraPos(firstDiceX - 0.8, 0.8, 1.8, 1800, firstDiceX, 0, 0);
+            }, 6300);
+
+            setTimeout(() => {
+                setCameraPos(0, 5.5, 8.5, 1800, 0, 0, 0);
+            }, 8200);
+
+            setTimeout(() => {
+                setCameraPos(camResetPos.x, camResetPos.y, camResetPos.z, 1200, 0, 0, 0);
+            }, 10100);
+
+            setTimeout(() => {
+                if (onComplete) onComplete();
+            }, 11400);
+        }
+
+        // 3巡目専用の特別演出カメラワーク
+        const line1 = document.getElementById('line-1');
+        const line2 = document.getElementById('line-2');
+
+        function playAchahiSpecialCameraSequence(onComplete) {
+            startAchaHiBGM();
+
+            setCameraPos(350, 4.0, 0, 3500, 500, 0, 0);
+
+            setTimeout(() => {
+                setCameraPos(460, 2.5, -15, 4000, 500, 0, 0);
+            }, 3700);
+
+            setTimeout(() => {
+                line1.classList.add('show');
+            }, 8000);
+
+            setTimeout(() => {
+                line2.classList.add('show');
+            }, 11500);
+
+            setTimeout(() => {
+                line1.classList.remove('show');
+                line2.classList.remove('show');
+            }, 16500);
+
+            setTimeout(() => {
+                setCameraPos(camResetPos.x, camResetPos.y, camResetPos.z, 3500, 0, 0, 0);
+            }, 17500);
+
+            setTimeout(() => {
+                if (onComplete) onComplete();
+            }, 21500);
+        }
+
+        // 巡数に応じてカメラワークを振り分け、無限にループさせる関数
+        function playCameraSequence() {
+            if (isRolling) return;
+
+            showCount++;
+            const isSpecial = (showCount === 3);
+            const currentSequence = isSpecial ? playAchahiSpecialCameraSequence : playNormalCameraSequence;
+
+            currentSequence(() => {
+                if (!isRolling) {
+                    secondShowTimer = setTimeout(() => {
+                        playCameraSequence();
+                    }, 2000);
+                }
+            });
+        }
+
+        function startAchaHiCameraShow(onFirstComplete) {
+            clearTimeout(secondShowTimer);
+            showCount = 0; // 成功演出の開始時に巡数をリセット
+
+            // 1巡目をスタート
+            showCount++;
+            playNormalCameraSequence(() => {
+                if (onFirstComplete) onFirstComplete();
+
+                if (!isRolling) {
+                    secondShowTimer = setTimeout(() => {
+                        playCameraSequence(); // 2巡目以降の無限ループへ
+                    }, 2000);
+                }
+            });
+        }
+
+        function getTopChar(dice) {
+            let maxDot = -Infinity;
+            let topChar = '';
+            const worldUp = new THREE.Vector3(0, 1, 0);
+
+            faceNormals.forEach(fn => {
+                const normal = fn.vector.clone().applyQuaternion(dice.quaternion);
+                const dot = normal.dot(worldUp);
+                if (dot > maxDot) {
+                    maxDot = dot;
+                    topChar = charList[fn.charIndex];
+                }
+            });
+            return topChar;
+        }
+
+        const btn = document.getElementById('roll-btn');
+        const secretBtn = document.getElementById('secret-btn');
+        const statusDiv = document.getElementById('status');
+        const resultDiv = document.getElementById('result');
+        const achaBanner = document.getElementById('acha-banner');
+
+        secretBtn.addEventListener('click', () => {
+            if (!isRolling || secretTrickActive) return;
+            secretTrickActive = true;
+            secretBtn.classList.add('pushed');
+            secretBtn.textContent = 'あちゃ!!';
+            statusDiv.textContent = '念が通じた...！？';
+        });
+
+        function rollDice() {
+            if (isRolling) return;
+            isRolling = true;
+            secretTrickActive = false;
+            btn.disabled = true;
+
+            clearTimeout(secondShowTimer);
+            clearTimeout(achaBgmTimer);
+
+            startRollBGM();
+
+            achaBanner.style.display = 'block';
+
+            resultDiv.classList.add('fade-out');
+            btn.classList.add('fade-out');
+            secretBtn.className = 'active';
+            secretBtn.textContent = 'あちゃ';
+
+            statusDiv.textContent = 'いざ、尋常...！';
+            setCameraPos(0, 6, 9, 1600, 0, 0, 0);
+
+            diceArray.forEach((dice, index) => {
+                const startX = (Math.random() - 0.5) * 3.5;
+                const startZ = (Math.random() - 0.5) * 3.5;
+                
+                dice.position.set(startX, 4.5 + index * 0.25, startZ);
+                dice.rotation.set(Math.random() * 10, Math.random() * 10, Math.random() * 10);
+
+                const angle = (index / 5) * Math.PI * 2 + (Math.random() * 0.4 - 0.2);
+                const radius = 0.8 + Math.random() * 0.5; 
+                const landX = Math.cos(angle) * radius;
+                const landZ = Math.sin(angle) * radius;
+
+                new TWEEN.Tween(dice.position)
+                    .to({ x: landX, y: -0.15, z: landZ }, 5000)
+                    .easing(TWEEN.Easing.Bounce.Out)
+                    .start();
+
+                new TWEEN.Tween(dice.rotation)
+                    .to({ 
+                        x: dice.rotation.x + Math.PI * (8 + index * 2), 
+                        y: dice.rotation.y + Math.PI * (6 + index * 2), 
+                        z: dice.rotation.z + Math.PI * (8 + index * 2) 
+                    }, 5000)
+                    .easing(TWEEN.Easing.Cubic.Out)
+                    .start();
+            });
+
+            setTimeout(() => {
+                if (!secretTrickActive) {
+                    statusDiv.textContent = '壺皿の中で交錯！';
+                }
+                setCameraPos(2.5, 1.2, 2.5, 1200, 0, 0, 0);
+            }, 3000);
+
+            setTimeout(() => {
+                const HALF_PI = Math.PI / 2;
+                const forcedTargets = ['あ', 'ち', 'ゃ', 'ー', 'ひ'];
+
+                diceArray.forEach((dice, index) => {
+                    let targetX, targetY, targetZ;
+
+                    if (secretTrickActive) {
+                        const targetChar = forcedTargets[index];
+                        const rot = targetRotations[targetChar];
+                        const randomYOffset = Math.floor(Math.random() * 4) * HALF_PI;
+                        
+                        targetX = rot.x;
+                        targetY = rot.y + randomYOffset;
+                        targetZ = rot.z;
+                    } else {
+                        targetX = Math.round(dice.rotation.x / HALF_PI) * HALF_PI;
+                        targetY = Math.round(dice.rotation.y / HALF_PI) * HALF_PI;
+                        targetZ = Math.round(dice.rotation.z / HALF_PI) * HALF_PI;
+                    }
+
+                    new TWEEN.Tween(dice.rotation)
+                        .to({ x: targetX, y: targetY, z: targetZ }, 600)
+                        .easing(TWEEN.Easing.Quadratic.Out)
+                        .start();
+                });
+
+                secretBtn.className = '';
+            }, 5000);
+
+            setTimeout(() => {
+                const rawResults = diceArray.map(dice => getTopChar(dice));
+
+                const hasA    = rawResults.includes('あ');
+                const hasChi  = rawResults.includes('ち');
+                const hasYa   = rawResults.includes('ゃ');
+                const hasDash = rawResults.includes('ー');
+                const hasHi   = rawResults.includes('ひ');
+
+                // 試行回数を加算
+                stats.total++;
+
+                let fixedChars = [];
+                let bannerText = '';
+                let isMaxCombo = false;
+
+                // 排他的な役の判定 ＆ 各効果音（acha1〜3）の再生（あちゃーひ/acha4は除外）
+                if (hasA && hasChi && hasYa && hasDash && hasHi) {
+                    fixedChars = ['あ', 'ち', 'ゃ', 'ー', 'ひ'];
+                    bannerText = 'ACHA-HI';
+                    isMaxCombo = true;
+                    stats.achaDashHi++;
+                    // acha4はなしなのでここでは効果音を鳴らさない
+                } else if (hasA && hasChi && hasYa && hasDash) {
+                    fixedChars = ['あ', 'ち', 'ゃ', 'ー'];
+                    bannerText = 'ACHA-';
+                    stats.achaDash++;
+                    playSFXWithDucking('achaDash');
+                } else if (hasA && hasChi && hasYa && hasHi) {
+                    fixedChars = ['あ', 'ち', 'ゃ', 'ひ'];
+                    bannerText = 'ACHAHI';
+                    stats.achaHi++;
+                    playSFXWithDucking('achaHi');
+                } else if (hasA && hasChi && hasYa) {
+                    fixedChars = ['あ', 'ち', 'ゃ'];
+                    bannerText = 'ACHA';
+                    stats.acha++;
+                    playSFXWithDucking('acha');
+                }
+
+                // ローカルストレージに保存＆UI更新
+                updateStatsUI();
+
+                let finalResults = [];
+                const isSuccess = bannerText !== '';
+
+                // BGMのクロスフェード切替
+                transitionBGM(isMaxCombo);
+
+                if (isSuccess) {
+                    let remainingChars = [...rawResults];
+                    fixedChars.forEach(char => {
+                        const idx = remainingChars.indexOf(char);
+                        if (idx !== -1) {
+                            remainingChars.splice(idx, 1);
+                        }
+                    });
+                    finalResults = [...fixedChars, ...remainingChars];
+
+                    if (isMaxCombo) {
+                        achaBanner.classList.add('gold-mode');
+                    } else {
+                        achaBanner.classList.remove('gold-mode');
+                    }
+
+                    achaBanner.textContent = bannerText;
+                    achaBanner.classList.remove('flow-acha');
+                    void achaBanner.offsetWidth;
+                    achaBanner.classList.add('flow-acha');
+                } else {
+                    finalResults = rawResults;
+                }
+
+                const displayDelay = isSuccess ? 3500 : 1500;
+
+                setTimeout(() => {
+                    achaBanner.style.display = 'none';
+                    achaBanner.classList.remove('flow-acha');
+
+                    statusDiv.textContent = secretTrickActive ? 'あちゃパワー大成功！' : (isMaxCombo ? '🎉 完全制覇！あちゃーひ！ 🎉' : '勝負あり！');
+                    resultDiv.textContent = `【 ${finalResults.join(' ')} 】`;
+
+                    resultDiv.classList.remove('fade-out');
+
+                    if (isMaxCombo) {
+                        startAchaHiCameraShow(() => {
+                            btn.classList.remove('fade-out');
+                            isRolling = false;
+                            btn.disabled = false;
+                        });
+                    } else {
+                        btn.classList.remove('fade-out');
+                        isRolling = false;
+                        btn.disabled = false;
+                    }
+
+                }, displayDelay);
+
+            }, 5600);
+        }
+
+        function resolveCollisions() {
+            const minDistance = 0.78;
+
+            for (let i = 0; i < diceArray.length; i++) {
+                for (let j = i + 1; j < diceArray.length; j++) {
+                    const d1 = diceArray[i];
+                    const d2 = diceArray[j];
+
+                    const dx = d2.position.x - d1.position.x;
+                    const dz = d2.position.z - d1.position.z;
+                    const dist = Math.hypot(dx, dz);
+
+                    if (dist < minDistance && dist > 0) {
+                        const overlap = minDistance - dist;
+                        const nx = dx / dist;
+                        const nz = dz / dist;
+
+                        d1.position.x -= nx * (overlap * 0.5);
+                        d1.position.z -= nz * (overlap * 0.5);
+                        d2.position.x += nx * (overlap * 0.5);
+                        d2.position.z += nz * (overlap * 0.5);
+                    }
+                }
+            }
+        }
+
+        btn.addEventListener('click', rollDice);
+
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+
+        function animate(time) {
+            requestAnimationFrame(animate);
+            TWEEN.update(time);
+
+            resolveCollisions();
+            
+            camera.up.set(0, 1, 0);
+
+            if (isRolling) {
+                let avgX = 0, avgY = 0, avgZ = 0;
+                diceArray.forEach(d => {
+                    avgX += d.position.x;
+                    avgY += d.position.y;
+                    avgZ += d.position.z;
+                });
+                if (camera.position.z > 1.0) {
+                    camera.lookAt(avgX / 5, (avgY / 5) + 0.2, avgZ / 5);
+                } else {
+                    camera.lookAt(0, 0, 0);
+                }
+            } else {
+                camera.lookAt(cameraTarget);
+            }
+
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
