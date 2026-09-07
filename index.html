@@ -1018,7 +1018,7 @@
                 id: 'ayayatouya_sp',
                 name: 'AMBITIOUS JAPAN!',
                 desc: 'I get a true love',
-                icon: 'achahi.png',
+                icon: 'achahi2.png',
                 rank: 'gold',
                 checkUnlocked: (stats) => stats.unlockedAyayatouya === true
             }
@@ -1876,9 +1876,16 @@
 
                     const finalRawResults = diceArray.map(dice => getTopChar(dice));
 
-                    const resultString = finalRawResults.join('');
-                    const isAyayatoo = (resultString === 'あゃゃーー');
-                    const isAyayayoo = (resultString === 'あゃゃゃー');
+                    // 順不同でカウントして判定
+                    const counts = {};
+                    finalRawResults.forEach(char => {
+                        counts[char] = (counts[char] || 0) + 1;
+                    });
+
+                    // 条件1: あ 1つ、ゃ 2つ、ー 2つ
+                    const isAyayatoo = (counts['あ'] === 1 && counts['ゃ'] === 2 && counts['ー'] === 2);
+                    // 条件2: あ 1つ、ゃ 3つ、ー 1つ
+                    const isAyayayoo = (counts['あ'] === 1 && counts['ゃ'] === 3 && counts['ー'] === 1);
 
                     // ★確率変動（確定演出：isSpecialActiveThisRoll）の時は「あややとぅーやー」を発動させないガード
                     if ((isAyayatoo || isAyayayoo) && !isSpecialActiveThisRoll) {
@@ -1896,8 +1903,8 @@
                         setTimeout(() => {
                             if (rollSessionId !== currentSessionId) return;
 
-                            const activeAyayatoo = isAyayatoo;
-                            const extraChars = activeAyayatoo ? ['と', 'ぅ', 'ゃ'] : ['と', 'ぅ', 'ー'];
+                            // パターン1（ゃ2つ,ー2つ）の時は残り3個を ['ゃ', 'と', 'ぅ']、パターン2（ゃ3つ,ー1つ）の時は ['ー', 'と', 'ぅ'] で補完して合計8個にする
+                            const extraChars = isAyayatoo ? ['ゃ', 'と', 'ぅ'] : ['ー', 'と', 'ぅ'];
 
                             extraChars.forEach((char, index) => {
                                 const extraDice = new THREE.Mesh(diceGeo, [
