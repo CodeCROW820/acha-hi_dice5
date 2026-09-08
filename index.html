@@ -126,118 +126,6 @@
             top: 65px;
         }
 
-        /* 2次元完全暗転オーバーレイ ＆ スライド画像・名前紹介・選択肢 */
-        #achacha-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #000000;
-            z-index: 999;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-        }
-
-        #achacha-overlay.show {
-            display: flex;
-            opacity: 1;
-        }
-
-        #achacha-slide-img {
-            width: 900px;
-            height: 900px;
-            object-fit: contain;
-            position: absolute;
-            top: -1100px; 
-            transition: top 10s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-
-        #achacha-slide-img.slide-down {
-            top: calc(50% - 520px);
-        }
-
-        /* 名前紹介のテロップ */
-        #achacha-name-intro {
-            position: absolute;
-            bottom: 150px;
-            color: #ffd700;
-            font-size: 1.8rem;
-            font-weight: bold;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-            opacity: 0;
-            transition: opacity 0.8s ease;
-            letter-spacing: 2px;
-            z-index: 1001;
-        }
-
-        #achacha-name-intro.show {
-            opacity: 1;
-        }
-
-        /* 黒い薄い帯（背景パネル）と選択肢コンテナ */
-        #achacha-choice-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            max-width: 600px;
-            padding: 25px 0;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(4px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.8s ease;
-            z-index: 1002;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        #achacha-choice-container.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        #achacha-choice-text {
-            color: #fff;
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-            letter-spacing: 1px;
-            text-align: center;
-            padding: 0 20px;
-        }
-
-        .achacha-choice-btns-wrap {
-            display: flex;
-            gap: 30px;
-            margin-top: 5px;
-        }
-
-        .achacha-choice-btn {
-            padding: 10px 35px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #fff;
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 25px;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
-        }
-
-        .achacha-choice-btn:hover {
-            background: rgba(255, 255, 255, 0.35);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
-        }
-
         /* サウンド設定ポップアップウィンドウ */
         #sound-modal {
             position: absolute;
@@ -386,27 +274,6 @@
         .achievement-box.gold:hover {
             transform: translateY(-3px);
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
-        }
-
-        /* 🌈 レインボー（虹色）実績スタイル */
-        @keyframes rainbowGlow {
-            0% { border-color: #ff0000; box-shadow: 0 0 15px rgba(255, 0, 0, 0.6); }
-            16.6% { border-color: #ff8800; box-shadow: 0 0 15px rgba(255, 136, 0, 0.6); }
-            33.3% { border-color: #ffff00; box-shadow: 0 0 15px rgba(255, 255, 0, 0.6); }
-            50% { border-color: #00ff00; box-shadow: 0 0 15px rgba(0, 255, 0, 0.6); }
-            66.6% { border-color: #00ffff; box-shadow: 0 0 15px rgba(0, 255, 255, 0.6); }
-            83.3% { border-color: #8800ff; box-shadow: 0 0 15px rgba(136, 0, 255, 0.6); }
-            100% { border-color: #ff0000; box-shadow: 0 0 15px rgba(255, 0, 0, 0.6); }
-        }
-
-        .achievement-box.rainbow {
-            border: 2px solid #ff0000;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(25, 25, 25, 0.95));
-            animation: rainbowGlow 3s linear infinite;
-        }
-        .achievement-box.rainbow:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.8);
         }
 
         .achievement-box img {
@@ -730,33 +597,6 @@
             font-weight: bold;
             color: #fff;
         }
-
-        /* godachar専用の画面popup画像スタイル (90度横向き、カーソルを合わせると引っ込む) */
-        #godachar-popup-img {
-            position: fixed;
-            top: 50%;
-            left: -250px;
-            width: 500px;
-            height: 500px;
-            object-fit: contain;
-            z-index: 250;
-            opacity: 0;
-            transform: translateY(-50%) translate(-200px, 50px) rotate(90deg);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
-            pointer-events: auto;
-            cursor: pointer;
-        }
-
-        #godachar-popup-img.show {
-            opacity: 1;
-            transform: translateY(-50%) translate(180px, 0) rotate(90deg);
-        }
-
-        #godachar-popup-img.hide-popup {
-            opacity: 0 !important;
-            transform: translateY(-50%) translate(-200px, 50px) rotate(90deg) !important;
-            pointer-events: none !important;
-        }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -764,27 +604,11 @@
 </head>
 <body>
 
-    <!-- godachar専用の画面popup画像 (90度回転 ＆ カーソルで引っ込む) -->
-    <img id="godachar-popup-img" src="achahi3.png" alt="ゴッドあちゃーひ">
-
-    <!-- 2次元完全暗転オーバーレイ（achahi3スライド ＆ 名前紹介 ＆ 背景パネル付き選択肢） -->
-    <div id="achacha-overlay">
-        <img id="achacha-slide-img" src="achahi3.png" alt="あちゃちゃ画像">
-        <div id="achacha-name-intro">あちゃ神 あちゃーひ</div>
-        <div id="achacha-choice-container">
-            <div id="achacha-choice-text">主あちゃーひを信じるか？</div>
-            <div class="achacha-choice-btns-wrap" id="choice-btns-wrap">
-                <button class="achacha-choice-btn" id="choice-yes">はい</button>
-                <button class="achacha-choice-btn" id="choice-no">いいえ</button>
-            </div>
-        </div>
-    </div>
-
     <!-- 実績解除ポップアップ通知 -->
     <div id="achievement-popup">
         <img id="popup-icon" src="achahi.png" alt="実績アイコン">
         <div class="popup-text-wrap">
-            <span class="popup-sub" id="popup-sub-text">実績解除！</span>
+            <span class="popup-sub">実績解除！</span>
             <span id="popup-name" class="popup-name">初めの一投</span>
         </div>
     </div>
@@ -919,15 +743,12 @@
         // 実績解除ポップアップ用要素 ＆ キュー管理
         const achievementPopup = document.getElementById('achievement-popup');
         const popupIcon = document.getElementById('popup-icon');
-        const popupSubText = document.getElementById('popup-sub-text');
         const popupName = document.getElementById('popup-name');
         
         const piconAudio = new Audio('picon.mp3');
         const chonAudio = new Audio('chon.mp3');
         const beAudio = new Audio('be.mp3');
         const ayayaAudio = new Audio('ayayatouya.mp3');
-        const kamiAudio = new Audio('kami.mp3');
-        kamiAudio.loop = true;
 
         let achievementQueue = [];
         let isPopupShowing = false;
@@ -940,7 +761,6 @@
 
             popupName.textContent = currentAch.name;
             popupIcon.src = currentAch.icon;
-            popupSubText.textContent = currentAch.subText || "実績解除！";
             
             piconAudio.currentTime = 0;
             piconAudio.volume = getVoiceVol();
@@ -957,8 +777,8 @@
             }, 3500);
         }
 
-        function queueAchievementPopup(achName, achIcon, subText = "実績解除！") {
-            achievementQueue.push({ name: achName, icon: achIcon, subText: subText });
+        function queueAchievementPopup(achName, achIcon) {
+            achievementQueue.push({ name: achName, icon: achIcon });
             processAchievementQueue();
         }
 
@@ -992,7 +812,7 @@
         });
 
         window.addEventListener('click', (e) => {
-            if (!soundModal.contains(e.target) && e.target !== configBtn && e.target !== achievementBtn && e.target !== achievementDimmer) {
+            if (!soundModal.contains(e.target) && e.target !== configBtn) {
                 soundModal.classList.remove('open');
             }
         });
@@ -1012,7 +832,6 @@
                 toggleNormalBgm.checked = false;
                 stopAllRollAudio();
                 winAudio.pause();
-                kamiAudio.pause();
             } else {
                 soundSettings.normalBgm = true;
                 toggleNormalBgm.checked = true;
@@ -1043,7 +862,6 @@
 
             Object.values(rollAudios).forEach(a => { a.volume = normalVol; });
             winAudio.volume = bgmVol;
-            kamiAudio.volume = bgmVol;
             
             piconAudio.volume = voiceVol;
             chonAudio.volume = voiceVol;
@@ -1069,7 +887,6 @@
 
         let rollFadeTimer = null;
         let winFadeTimer = null;
-        let kamiFadeTimer = null;
         
         let bgmFadeTimer = null;
         let soundMonitor = null;
@@ -1110,12 +927,28 @@
                 checkUnlocked: (stats) => stats.achaDashHi >= 1
             },
             {
-                id: 'dice_master_500',
-                name: 'ダイスマスター',
-                desc: 'ダイスを500回振った',
+                id: 'kakuzen_fever',
+                name: 'つまりこれは、ひょっとして、確変ってやつ～!?',
+                desc: '確定演出を見る',
                 icon: 'achahi.png',
                 rank: 'silver',
-                checkUnlocked: (stats) => stats.total >= 500
+                checkUnlocked: (stats) => stats.unlockedKakuzenFever === true
+            },
+            {
+                id: 'dont_mind_salvation',
+                name: '、、、どんまい',
+                desc: '８０回連続であちゃーひが出ない',
+                icon: 'achahi.png',
+                rank: 'silver',
+                checkUnlocked: (stats) => stats.unlockedSalvation === true
+            },
+            {
+                id: 'acha_five_times',
+                name: 'ｱﾁｬｱﾁｬうるせぇ',
+                desc: 'あちゃを５回連続で出す',
+                icon: 'achahi.png',
+                rank: 'silver',
+                checkUnlocked: (stats) => stats.unlockedAchaFiveTimes === true
             },
             {
                 id: 'acha_master_100',
@@ -1126,73 +959,41 @@
                 checkUnlocked: (stats) => (stats.acha + stats.achaDash + stats.achaHi + stats.achaDashHi) >= 100
             },
             {
-                id: 'kakuzen_fever',
-                name: 'つまりこれは、ひょっとして、確変ってやつ～!?',
-                desc: '確定演出を見る',
+                id: 'dice_master_500',
+                name: 'ダイスマスター',
+                desc: 'ダイスを５００回振った',
                 icon: 'achahi.png',
                 rank: 'silver',
-                checkUnlocked: (stats) => stats.unlockedKakuzenFever === true
-            },
-            {
-                id: 'acha_five_times',
-                name: 'ｱﾁｬｱﾁｬうるせぇ',
-                desc: 'あちゃを5回連続で出す',
-                icon: 'achahi.png',
-                rank: 'silver',
-                checkUnlocked: (stats) => stats.unlockedAchaFiveTimes === true
-            },
-            {
-                id: 'dont_mind_salvation',
-                name: '、、、どんまい',
-                desc: '80回連続であちゃーひが出ない',
-                icon: 'achahi.png',
-                rank: 'silver',
-                checkUnlocked: (stats) => stats.unlockedSalvation === true
-            },
-            {
-                id: 'study_more_1000',
-                name: '暇なんか勉強しろ',
-                desc: 'ダイスを1000回振った',
-                icon: 'achahi.png',
-                rank: 'gold',
-                checkUnlocked: (stats) => stats.total >= 1000
-            },
-            {
-                id: 'sugi_5000',
-                name: 'お前やりますねぇスギ',
-                desc: 'ダイスを5000回振った',
-                icon: 'achahi.png',
-                rank: 'gold',
-                checkUnlocked: (stats) => stats.total >= 5000
+                checkUnlocked: (stats) => stats.total >= 500
             },
             {
                 id: 'pokemon_master_500',
                 name: '目指すならポケモンマスター',
-                desc: 'あちゃが合計500回出る',
+                desc: 'あちゃが合計５００回出る',
                 icon: 'achahi.png',
                 rank: 'gold',
                 checkUnlocked: (stats) => (stats.acha + stats.achaDash + stats.achaHi + stats.achaDashHi) >= 500
             },
             {
+                id: 'study_more_1000',
+                name: '暇なんか勉強しろ',
+                desc: 'ダイスを１０００回振った',
+                icon: 'achahi.png',
+                rank: 'gold',
+                checkUnlocked: (stats) => stats.total >= 1000
+            },
+            {
                 id: 'acha_acha_achahi',
                 name: 'あちゃあちゃあちゃひ',
-                desc: 'あちゃを2回連続で出し、続けてあちゃひを出す',
+                desc: 'あちゃあちゃあちゃひ',
                 icon: 'achahi.png',
                 rank: 'gold',
                 checkUnlocked: (stats) => stats.unlockedAchaAchahi === true
-            },     
-            {
-                id: 'new_achahi_300',
-                name: '新あちゃーひ',
-                desc: 'あちゃーひ回数が３００回になる',
-                icon: 'achahi.png',
-                rank: 'gold',
-                checkUnlocked: (stats) => stats.achaDashHi >= 300
             },
             {
                 id: 'cheat_achahi_twice',
                 name: 'え？チート？',
-                desc: 'あちゃーひを2回連続で出す',
+                desc: 'あちゃーひを２回連続で出す',
                 icon: 'achahi.png',
                 rank: 'gold',
                 checkUnlocked: (stats) => stats.unlockedCheatTwice === true
@@ -1200,7 +1001,7 @@
             {
                 id: 'smash_illusion',
                 name: 'その幻想をぶち壊す！',
-                desc: 'あちゃ確定演出で元からあちゃーひが出来ている',
+                desc: '確定演出をぶち壊す',
                 icon: 'achahi.png',
                 rank: 'gold',
                 checkUnlocked: (stats) => stats.unlockedSmashIllusion === true
@@ -1208,7 +1009,7 @@
             {
                 id: 'prize_achahi',
                 name: '景品はあちゃーひ',
-                desc: '5個ダイスをそろえる',
+                desc: '５個さいころをそろえる',
                 icon: 'achahi.png',
                 rank: 'gold',
                 checkUnlocked: (stats) => stats.unlockedPrizeAchahi === true
@@ -1220,59 +1021,6 @@
                 icon: 'achahi2.png',
                 rank: 'gold',
                 checkUnlocked: (stats) => stats.unlockedAyayatouya === true
-            },
-            {
-                id: 'unknown_encounter',
-                name: '未知との遭遇',
-                desc: '神に出会う',
-                icon: 'achahi3.png',
-                rank: 'gold',
-                checkUnlocked: (stats) => stats.unlockedUnknownEncounter === true,
-                isVisible: (stats) => !stats.deletedUnknownEncounter
-            },
-            {
-                id: 'god_mercy_gold',
-                name: '神の御慈悲',
-                desc: '素晴らしい。',
-                icon: 'achahi3.png',
-                rank: 'gold',
-                checkUnlocked: (stats) => stats.unlockedGodMercy === true,
-                isVisible: (stats) => stats.unlockedGodMercy
-            },
-            {
-                id: 'god_wrath_gold',
-                name: '神の怒り',
-                desc: '覚えているぞ。',
-                icon: 'achahi3.png',
-                rank: 'gold',
-                checkUnlocked: (stats) => stats.unlockedGodWrath === true,
-                isVisible: (stats) => stats.unlockedGodWrath
-            },
-            {
-                id: 'god_destroyed_achahi',
-                name: '神の気まぐれ',
-                desc: '滑稽。',
-                icon: 'achahi3.png',
-                rank: 'gold',
-                checkUnlocked: (stats) => stats.unlockedGodDestroyedAchahi === true,
-                isVisible: (stats) => stats.unlockedGodMercy || stats.unlockedGodWrath
-            },
-            {
-                id: 'distributing_luck_10',
-                name: '神の運気切れ',
-                desc: '滑稽。x10',
-                icon: 'achahi3.png',
-                rank: 'gold',
-                checkUnlocked: (stats) => stats.godDestroyedAchahiCount >= 10,
-                isVisible: (stats) => stats.unlockedGodMercy || stats.unlockedGodWrath
-            },
-            {
-                id: 'true_achahi_10000',
-                name: 'お前は真のあちゃーひだ',
-                desc: 'ダイスを10000回振る',
-                icon: 'achahi4.png',
-                rank: 'rainbow',
-                checkUnlocked: (stats) => stats.total >= 10000
             }
         ];
 
@@ -1289,11 +1037,6 @@
             achaStreak: 0,
             achahiStreak: 0,
             notAchahiStreak: 0,
-            godMood: 0,
-            godkyusai: false,
-            godachar: 0,
-            godDestroyedAchahiCount: 0,
-            deletedUnknownEncounter: false,
             unlockedKakuzenFever: false,
             unlockedSalvation: false,
             unlockedAchaFiveTimes: false,
@@ -1302,10 +1045,6 @@
             unlockedSmashIllusion: false,
             unlockedPrizeAchahi: false,
             unlockedAyayatouya: false,
-            unlockedUnknownEncounter: false,
-            unlockedGodMercy: false,
-            unlockedGodWrath: false,
-            unlockedGodDestroyedAchahi: false,
             unlockedAchievements: {}
         };
         if (stats.streakCurr === undefined) stats.streakCurr = 0;
@@ -1315,11 +1054,6 @@
         if (stats.achaStreak === undefined) stats.achaStreak = 0;
         if (stats.achahiStreak === undefined) stats.achahiStreak = 0;
         if (stats.notAchahiStreak === undefined) stats.notAchahiStreak = 0;
-        if (stats.godMood === undefined) stats.godMood = 0;
-        if (stats.godkyusai === undefined) stats.godkyusai = false;
-        if (stats.godachar === undefined) stats.godachar = 0;
-        if (stats.godDestroyedAchahiCount === undefined) stats.godDestroyedAchahiCount = 0;
-        if (stats.deletedUnknownEncounter === undefined) stats.deletedUnknownEncounter = false;
         if (stats.unlockedKakuzenFever === undefined) stats.unlockedKakuzenFever = false;
         if (stats.unlockedSalvation === undefined) stats.unlockedSalvation = false;
         if (stats.unlockedAchaFiveTimes === undefined) stats.unlockedAchaFiveTimes = false;
@@ -1328,26 +1062,14 @@
         if (stats.unlockedSmashIllusion === undefined) stats.unlockedSmashIllusion = false;
         if (stats.unlockedPrizeAchahi === undefined) stats.unlockedPrizeAchahi = false;
         if (stats.unlockedAyayatouya === undefined) stats.unlockedAyayatouya = false;
-        if (stats.unlockedUnknownEncounter === undefined) stats.unlockedUnknownEncounter = false;
-        if (stats.unlockedGodMercy === undefined) stats.unlockedGodMercy = false;
-        if (stats.unlockedGodWrath === undefined) stats.unlockedGodWrath = false;
-        if (stats.unlockedGodDestroyedAchahi === undefined) stats.unlockedGodDestroyedAchahi = false;
         if (stats.unlockedAchievements === undefined) stats.unlockedAchievements = {};
-
-        // ゴッドあちゃーひポップアップ画像のカーソルホバー時（引っ込む挙動）
-        const godacharPopupImg = document.getElementById('godachar-popup-img');
-        godacharPopupImg.addEventListener('mouseenter', () => {
-            godacharPopupImg.classList.add('hide-popup');
-        });
 
         function checkAndUnlockAchievements() {
             const now = new Date();
             const formattedTime = `${now.getFullYear()}年${String(now.getMonth() + 1).padStart(2, '0')}月${String(now.getDate()).padStart(2, '0')}日 ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
             achievementsList.forEach(ach => {
-                if (stats.unlockedAchievements[ach.id]) return;
-
-                if (ach.checkUnlocked(stats)) {
+                if (!stats.unlockedAchievements[ach.id] && ach.checkUnlocked(stats)) {
                     stats.unlockedAchievements[ach.id] = formattedTime;
                     queueAchievementPopup(ach.name, ach.icon);
                 }
@@ -1360,8 +1082,6 @@
             achievementGrid.innerHTML = '';
 
             achievementsList.forEach(ach => {
-                if (ach.isVisible && !ach.isVisible(stats)) return;
-
                 const unlockedTime = stats.unlockedAchievements[ach.id];
                 const isUnlocked = !!unlockedTime;
 
@@ -1419,7 +1139,6 @@
             bgmFadeTimer = setInterval(() => {
                 let activeBGM = getActiveRollAudio();
                 if (!activeBGM && !winAudio.paused && winAudio.currentTime > 0) activeBGM = winAudio;
-                if (!activeBGM && !kamiAudio.paused && kamiAudio.currentTime > 0) activeBGM = kamiAudio;
 
                 if (!activeBGM) {
                     clearInterval(bgmFadeTimer);
@@ -1460,12 +1179,9 @@
             if (!soundSettings.bgm || !soundSettings.normalBgm) return;
             clearInterval(rollFadeTimer);
             clearInterval(winFadeTimer);
-            clearInterval(kamiFadeTimer);
 
             winAudio.pause();
             winAudio.currentTime = 0;
-            kamiAudio.pause();
-            kamiAudio.currentTime = 0;
             stopAllRollAudio();
 
             let rollKey = isSpecialActive ? 3 : 1;
@@ -1477,10 +1193,9 @@
             targetAudio.play().catch(e => console.log('オーディオ再生エラー:', e));
         }
 
-        function transitionBGM(isMaxCombo, isGodAchar = false) {
+        function transitionBGM(isMaxCombo) {
             clearInterval(rollFadeTimer);
             clearInterval(winFadeTimer);
-            clearInterval(kamiFadeTimer);
 
             const activeRoll = getActiveRollAudio();
             if (activeRoll) {
@@ -1497,24 +1212,20 @@
 
             if (isMaxCombo) {
                 setTimeout(() => {
-                    const targetAudio = isGodAchar ? kamiAudio : winAudio;
-                    targetAudio.currentTime = 0;
-                    targetAudio.volume = 0;
+                    winAudio.currentTime = 0;
+                    winAudio.volume = 0;
                     targetBGMVolume = getBgmVol;
-                    targetAudio.play().catch(e => console.log('オーディオ再生エラー:', e));
+                    winAudio.play().catch(e => console.log('オーディオ再生エラー:', e));
 
-                    const setterTimer = setInterval(() => {
+                    winFadeTimer = setInterval(() => {
                         const targetVol = getBgmVol();
-                        if (targetAudio.volume < (targetVol - 0.05)) {
-                            targetAudio.volume += 0.05;
+                        if (winAudio.volume < (targetVol - 0.05)) {
+                            winAudio.volume += 0.05;
                         } else {
-                            targetAudio.volume = targetVol;
-                            clearInterval(setterTimer);
+                            winAudio.volume = targetVol;
+                            clearInterval(winFadeTimer);
                         }
                     }, 100);
-
-                    if (isGodAchar) kamiFadeTimer = setterTimer;
-                    else winFadeTimer = setterTimer;
                 }, 500);
             }
         }
@@ -1524,7 +1235,7 @@
             if (!soundSettings.bgm) return;
             clearTimeout(achaBgmTimer);
             achaBgmTimer = setTimeout(() => {
-                if (!isRolling && winAudio.paused && kamiAudio.paused && soundSettings.bgm) {
+                if (!isRolling && winAudio.paused && soundSettings.bgm) {
                     winAudio.currentTime = 0;
                     winAudio.volume = getBgmVol();
                     targetBGMVolume = getBgmVol;
@@ -1564,19 +1275,6 @@
         ];
 
         const container = document.getElementById('canvas-container');
-        const achachaOverlay = document.getElementById('achacha-overlay');
-        const achachaSlideImg = document.getElementById('achacha-slide-img');
-        const achachaNameIntro = document.getElementById('achacha-name-intro');
-        const achachaChoiceContainer = document.getElementById('achacha-choice-container');
-        const achachaChoiceText = document.getElementById('achacha-choice-text');
-        const choiceBtnsWrap = document.getElementById('choice-btns-wrap');
-        const choiceYesBtn = document.getElementById('choice-yes');
-        const choiceNoBtn = document.getElementById('choice-no');
-
-        let noButtonPressCount = 0;
-        let isGodMood2StepTwo = false;
-        let isGodMood3StepTwo = false;
-
         const scene = new THREE.Scene();
         
         const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
@@ -1636,16 +1334,7 @@
             console.warn('achahi2.png の読み込みに失敗しました:', err);
         });
 
-        let achahiMeshRef = null;
-        let achahi3TextureRef = null;
-        let achahiTextureRef = null;
-
-        textureLoader.load('achahi3.png', (texture) => {
-            achahi3TextureRef = texture;
-        });
-
         textureLoader.load('achahi.png', (texture) => {
-            achahiTextureRef = texture;
             const planeMat = new THREE.MeshStandardMaterial({ 
                 map: texture, 
                 transparent: true,
@@ -1654,11 +1343,11 @@
             });
             const planeGeo = new THREE.PlaneGeometry(1, 1);
 
-            achahiMeshRef = new THREE.Mesh(planeGeo, planeMat);
-            achahiMeshRef.position.set(500.0, 0, 0);
-            achahiMeshRef.rotation.y = -Math.PI / 2;
-            achahiMeshRef.scale.set(35.0, 35.0, 35.0);
-            scene.add(achahiMeshRef);
+            const achahiMesh = new THREE.Mesh(planeGeo, planeMat);
+            achahiMesh.position.set(500.0, 0, 0);
+            achahiMesh.rotation.y = -Math.PI / 2;
+            achahiMesh.scale.set(35.0, 35.0, 35.0);
+            scene.add(achahiMesh);
         }, undefined, (err) => {
             console.error('achahi.png の読み込みに失敗しました:', err);
         });
@@ -1824,21 +1513,13 @@
 
             setTimeout(() => {
                 if (rollSessionId !== currentSessionId) return;
-                if (stats.godkyusai) {
-                    line1.textContent = "親愛なる信徒よ";
-                } else {
-                    line1.textContent = "８０回連続で出なかったん？";
-                }
+                line1.textContent = "８０回連続で出なかったん？";
                 line1.classList.add('show');
             }, 7500);
 
             setTimeout(() => {
                 if (rollSessionId !== currentSessionId) return;
-                if (stats.godkyusai) {
-                    line2.textContent = "主の運気を与えよう";
-                } else {
-                    line2.textContent = "ま？？？";
-                }
+                line2.textContent = "ま？？？";
                 line2.classList.add('show');
             }, 11000);
 
@@ -1855,8 +1536,6 @@
 
             setTimeout(() => {
                 if (rollSessionId !== currentSessionId) return;
-                stats.godkyusai = false;
-                localStorage.setItem('achaDiceStats', JSON.stringify(stats));
                 if (onComplete) onComplete();
             }, 22000);
         }
@@ -2003,209 +1682,9 @@
 
         let isSpecialActiveThisRoll = false;
 
-        function stopAllAudioAndEffects() {
-            kamiAudio.pause(); kamiAudio.currentTime = 0;
-            winAudio.pause(); winAudio.currentTime = 0;
-            stopAllRollAudio();
-        }
-
-        function returnToDiceScreen(targetMood, isWrath = false) {
-            stopAllAudioAndEffects();
-            noButtonPressCount = 0;
-            isGodMood2StepTwo = false;
-            isGodMood3StepTwo = false;
-
-            let isMoodZeroBefore = (stats.godMood === 0);
-
-            stats.godMood = targetMood;
-
-            localStorage.setItem('achaDiceStats', JSON.stringify(stats));
-            updateMoodBtnText();
-
-            achachaOverlay.style.background = '#000000';
-            achachaSlideImg.classList.remove('slide-down');
-            achachaNameIntro.classList.remove('show');
-            achachaChoiceContainer.classList.remove('show');
-            achachaOverlay.classList.remove('show');
-
-            setTimeout(() => {
-                const now = new Date();
-                const formattedTime = `${now.getFullYear()}年${String(now.getMonth() + 1).padStart(2, '0')}月${String(now.getDate()).padStart(2, '0')}日 ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-                
-                if (isMoodZeroBefore) {
-                    if (!stats.unlockedAchievements['unknown_encounter']) {
-                        stats.unlockedUnknownEncounter = true;
-                        stats.unlockedAchievements['unknown_encounter'] = formattedTime;
-                        queueAchievementPopup('未知との遭遇', 'achahi3.png', '実績解除！');
-                    }
-
-                    setTimeout(() => {
-                        queueAchievementPopup('実績があちゃーひ神によって変更されました', 'achahi3.png', '神の宣託');
-                        
-                        setTimeout(() => {
-                            stats.deletedUnknownEncounter = true;
-                            delete stats.unlockedAchievements['unknown_encounter'];
-
-                            if (isWrath) {
-                                stats.unlockedGodWrath = true;
-                                queueAchievementPopup('神の怒り', 'achahi3.png', '実績解除！');
-                            } else {
-                                stats.unlockedGodMercy = true;
-                                queueAchievementPopup('神の御慈悲', 'achahi3.png', '実績解除！');
-                            }
-                            checkAndUnlockAchievements();
-                        }, 4000);
-                    }, 4000);
-                } else {
-                    if (isWrath) stats.unlockedGodWrath = true;
-                    else stats.unlockedGodMercy = true;
-                    checkAndUnlockAchievements();
-                }
-
-                stats.total++;
-                stats.acha++;
-                updateStatsUI();
-
-                resultDiv.textContent = '【 あ ち ゃ ち ゃ 】';
-                resultDiv.classList.remove('fade-out');
-                setCameraPos(camResetPos.x, camResetPos.y, camResetPos.z, 800, 0, 0, 0);
-
-                statusDiv.textContent = '✨ あちゃちゃ…！ ✨';
-                btn.classList.remove('fade-out');
-                isRolling = false;
-                btn.disabled = false;
-            }, 1000);
-        }
-
-        function handleNoButton() {
-            noButtonPressCount++;
-            achachaChoiceContainer.classList.remove('show');
-
-            setTimeout(() => {
-                if (stats.godMood === 2) {
-                    achachaChoiceText.textContent = 'は？';
-                    choiceBtnsWrap.innerHTML = '';
-                    const nextBtn = document.createElement('button');
-                    nextBtn.className = 'achacha-choice-btn';
-                    nextBtn.textContent = 'はい';
-                    nextBtn.addEventListener('click', () => {
-                        isGodMood2StepTwo = false;
-                        returnToDiceScreen(3, true);
-                    });
-                    choiceBtnsWrap.appendChild(nextBtn);
-                    achachaChoiceContainer.classList.add('show');
-                    return;
-                }
-
-                if (stats.godMood === 3) {
-                    achachaChoiceText.textContent = 'あ、そう';
-                    choiceBtnsWrap.innerHTML = '';
-                    const okBtn = document.createElement('button');
-                    okBtn.className = 'achacha-choice-btn';
-                    okBtn.textContent = 'はい';
-                    okBtn.addEventListener('click', () => {
-                        isGodMood3StepTwo = false;
-                        returnToDiceScreen(3, false);
-                    });
-                    choiceBtnsWrap.appendChild(okBtn);
-                    achachaChoiceContainer.classList.add('show');
-                    return;
-                }
-
-                if (stats.godMood === 1) {
-                    achachaChoiceText.textContent = 'そう？別にいいけど';
-                    choiceBtnsWrap.innerHTML = '';
-                    const singleYesBtn = document.createElement('button');
-                    singleYesBtn.className = 'achacha-choice-btn';
-                    singleYesBtn.id = 'choice-yes';
-                    singleYesBtn.textContent = 'はい';
-                    singleYesBtn.addEventListener('click', () => returnToDiceScreen(2, false));
-                    choiceBtnsWrap.appendChild(singleYesBtn);
-                    achachaChoiceContainer.classList.add('show');
-                    return;
-                }
-
-                if (noButtonPressCount >= 10) {
-                    achachaChoiceText.textContent = '次、会った時覚えていろよ';
-                    choiceBtnsWrap.innerHTML = '';
-                    const singleYesBtn = document.createElement('button');
-                    singleYesBtn.className = 'achacha-choice-btn';
-                    singleYesBtn.id = 'choice-yes';
-                    singleYesBtn.textContent = 'はい';
-                    singleYesBtn.addEventListener('click', () => returnToDiceScreen(3, true));
-                    choiceBtnsWrap.appendChild(singleYesBtn);
-                } else {
-                    const noMessages = [
-                        '本当に信じてないの？',
-                        'え？信じてくれよ',
-                        '本当に神なんですって',
-                        'ｱﾁｬ! ほら本物。'
-                    ];
-                    const randomMsg = noMessages[Math.floor(Math.random() * noMessages.length)];
-                    achachaChoiceText.textContent = randomMsg;
-                }
-                achachaChoiceContainer.classList.add('show');
-            }, 500);
-        }
-
-        choiceYesBtn.addEventListener('click', () => {
-            if (stats.godMood === 2 && !isGodMood2StepTwo) {
-                isGodMood2StepTwo = true;
-                achachaChoiceContainer.classList.remove('show');
-                setTimeout(() => {
-                    achachaChoiceText.textContent = 'あちゃーひの加護と共にあれ';
-                    choiceYesBtn.textContent = 'はい';
-                    achachaChoiceContainer.classList.add('show');
-                }, 500);
-                return;
-            }
-
-            if (stats.godMood === 3 && !isGodMood3StepTwo) {
-                isGodMood3StepTwo = true;
-                achachaChoiceContainer.classList.remove('show');
-                setTimeout(() => {
-                    achachaChoiceText.textContent = '主あちゃーひ神を信じるか？';
-                    choiceYesBtn.textContent = 'はい';
-                    choiceBtnsWrap.innerHTML = '';
-                    choiceBtnsWrap.appendChild(choiceYesBtn);
-                    choiceBtnsWrap.appendChild(choiceNoBtn);
-                    achachaChoiceContainer.classList.add('show');
-                }, 500);
-                return;
-            }
-
-            if (stats.godMood === 3 && isGodMood3StepTwo) {
-                achachaChoiceContainer.classList.remove('show');
-                setTimeout(() => {
-                    achachaChoiceText.textContent = 'ずっと見ているぞ';
-                    choiceBtnsWrap.innerHTML = '';
-                    const finalYesBtn = document.createElement('button');
-                    finalYesBtn.className = 'achacha-choice-btn';
-                    finalYesBtn.textContent = 'はい';
-                    finalYesBtn.addEventListener('click', () => {
-                        isGodMood3StepTwo = false;
-                        returnToDiceScreen(1, false);
-                    });
-                    choiceBtnsWrap.appendChild(finalYesBtn);
-                    achachaChoiceContainer.classList.add('show');
-                }, 500);
-                return;
-            }
-
-            let nextMood = 1;
-            if (stats.godMood === 0) nextMood = 1;
-            else if (stats.godMood === 1) nextMood = 2;
-            else if (stats.godMood === 2) nextMood = 1;
-
-            returnToDiceScreen(nextMood, false);
-        });
-
-        choiceNoBtn.addEventListener('click', handleNoButton);
-
         function rollDice() {
             if (isRolling) return;
 
-            stopAllAudioAndEffects();
             ayayaAudio.pause(); ayayaAudio.currentTime = 0;
             beAudio.pause(); beAudio.currentTime = 0;
             chonAudio.pause(); chonAudio.currentTime = 0;
@@ -2213,53 +1692,9 @@
             Object.values(soundEffects).forEach(sfx => { sfx.pause(); sfx.currentTime = 0; });
 
             isAyayatooLoopActive = false;
-            achachaOverlay.classList.remove('show');
-            achachaSlideImg.classList.remove('slide-down');
-            achachaNameIntro.classList.remove('show');
-            achachaChoiceContainer.classList.remove('show');
-            
-            noButtonPressCount = 0;
-            isGodMood2StepTwo = false;
-            isGodMood3StepTwo = false;
-
-            if (stats.godMood === 1) {
-                achachaChoiceText.textContent = '親愛なる信徒よ「あちゃーひ」が欲しいか？';
-            } else if (stats.godMood === 2) {
-                achachaChoiceText.textContent = 'あちゃーひ神を崇拝するか？';
-            } else if (stats.godMood === 3) {
-                achachaChoiceText.textContent = '...気は変わったか？';
-            } else {
-                achachaChoiceText.textContent = '主あちゃーひを信じるか？';
-            }
-
-            choiceBtnsWrap.innerHTML = '';
-            choiceBtnsWrap.appendChild(choiceYesBtn);
-            choiceBtnsWrap.appendChild(choiceNoBtn);
 
             surroundAchahiArray.forEach(obj => scene.remove(obj));
             surroundAchahiArray.length = 0;
-
-            if (stats.godachar === 1) {
-                stats.godachar = 2;
-                localStorage.setItem('achaDiceStats', JSON.stringify(stats));
-            } else if (stats.godachar === 2) {
-                stats.godachar = 0;
-                localStorage.setItem('achaDiceStats', JSON.stringify(stats));
-            }
-
-            if (stats.godkyusai && stats.notAchahiStreak < 80) {
-                stats.godkyusai = false;
-                localStorage.setItem('achaDiceStats', JSON.stringify(stats));
-            }
-
-            if (achahiMeshRef && achahiTextureRef) {
-                achahiMeshRef.material.map = achahiTextureRef;
-                achahiMeshRef.material.needsUpdate = true;
-            }
-            if (godacharPopupImg) {
-                godacharPopupImg.classList.remove('show');
-                godacharPopupImg.classList.remove('hide-popup');
-            }
 
             isRolling = true;
             btn.disabled = true;
@@ -2354,12 +1789,9 @@
                 setCameraPos(2.5, 1.2, 2.5, 1200, 0, 0, 0);
             }, 3000);
 
-            let isGodAcharTriggered = (stats.godachar === 2 && !isSpecialActiveThisRoll);
-
             setTimeout(() => {
                 if (rollSessionId !== currentSessionId) return;
                 const HALF_PI = Math.PI / 2;
-
                 diceArray.forEach((dice, idx) => {
                     let targetX = Math.round(dice.rotation.x / HALF_PI) * HALF_PI;
                     let targetY = Math.round(dice.rotation.y / HALF_PI) * HALF_PI;
@@ -2376,14 +1808,10 @@
                 if (rollSessionId !== currentSessionId) return;
                 const initialResults = diceArray.map(dice => getTopChar(dice));
 
-                const initialCounts = {};
-                initialResults.forEach(char => { initialCounts[char] = (initialCounts[char] || 0) + 1; });
-                const isInitialAchacha = (initialCounts['あ'] === 1 && initialCounts['ち'] === 2 && initialCounts['ゃ'] === 2);
-
                 let needsCorrection = false;
                 let correctionTargets = {};
 
-                if (isSpecialActiveThisRoll && !isInitialAchacha) {
+                if (isSpecialActiveThisRoll) {
                     correctionTargets = kakutei(initialResults);
                     if (Object.keys(correctionTargets).length > 0) {
                         needsCorrection = true;
@@ -2399,33 +1827,15 @@
                 const isInitialMaxCombo = (hasA_raw && hasChi_raw && hasYa_raw && hasDash_raw && hasHi_raw);
 
                 let isSalvationTriggered = false;
-
-                if (stats.notAchahiStreak >= 80 && !isInitialMaxCombo && !needsCorrection && !isSpecialActiveThisRoll && !isInitialAchacha) {
+                if (stats.notAchahiStreak >= 80 && !isInitialMaxCombo && !needsCorrection) {
                     isSalvationTriggered = true;
-                    
-                    if (stats.godkyusai && achahiMeshRef && achahi3TextureRef) {
-                        achahiMeshRef.material.map = achahi3TextureRef;
-                        achahiMeshRef.material.needsUpdate = true;
-                    }
                 }
 
-                if (isSalvationTriggered || isGodAcharTriggered) {
+                if (isSalvationTriggered) {
                     stopAllRollAudio();
 
                     statusDiv.textContent = '…………';
                     
-                    const rawResultsBeforeGod = diceArray.map(dice => getTopChar(dice));
-                    const wasAchahiBefore = rawResultsBeforeGod.includes('あ') && 
-                                            rawResultsBeforeGod.includes('ち') && 
-                                            rawResultsBeforeGod.includes('ゃ') && 
-                                            rawResultsBeforeGod.includes('ー') && 
-                                            rawResultsBeforeGod.includes('ひ');
-
-                    if (isGodAcharTriggered && wasAchahiBefore) {
-                        stats.unlockedGodDestroyedAchahi = true;
-                        stats.godDestroyedAchahiCount++;
-                    }
-
                     setTimeout(() => {
                         if (rollSessionId !== currentSessionId) return;
 
@@ -2433,10 +1843,9 @@
                         chonAudio.volume = getVoiceVol();
                         chonAudio.play().catch(e => console.log('chon.mp3 再生エラー:', e));
 
-                        const targetChars = isGodAcharTriggered ? ['あ', 'ち', 'ゃ', 'ー', 'ー'] : ['あ', 'ち', 'ゃ', 'ー', 'ひ'];
-
+                        const salvationTargets = ['あ', 'ち', 'ゃ', 'ー', 'ひ'];
                         diceArray.forEach((dice, i) => {
-                            const targetChar = targetChars[i];
+                            const targetChar = salvationTargets[i];
                             const rot = targetRotations[targetChar];
                             new TWEEN.Tween(dice.rotation)
                                 .to({ x: rot.x + Math.PI * 2, y: rot.y + Math.PI * 2, z: rot.z }, 800)
@@ -2445,7 +1854,7 @@
                         });
 
                     }, 2000);
-                } else if (Object.keys(correctionTargets).length > 0 && !isInitialAchacha) {
+                } else if (Object.keys(correctionTargets).length > 0) {
                     Object.keys(correctionTargets).forEach(i => {
                         const dice = diceArray[i];
                         const targetChar = correctionTargets[i];
@@ -2458,7 +1867,7 @@
                     });
                 }
 
-                const finalEvalDelay = (isSalvationTriggered || isGodAcharTriggered) ? 2800 : ((Object.keys(correctionTargets).length > 0 && !isInitialAchacha) ? 1000 : 200);
+                const finalEvalDelay = isSalvationTriggered ? 2800 : ((Object.keys(correctionTargets).length > 0) ? 1000 : 200);
 
                 setTimeout(() => {
                     if (rollSessionId !== currentSessionId) return;
@@ -2467,67 +1876,18 @@
 
                     const finalRawResults = diceArray.map(dice => getTopChar(dice));
 
+                    // 順不同でカウントして判定
                     const counts = {};
                     finalRawResults.forEach(char => {
                         counts[char] = (counts[char] || 0) + 1;
                     });
 
-                    const isAchacha = (counts['あ'] === 1 && counts['ち'] === 2 && counts['ゃ'] === 2);
-
+                    // 条件1: あ 1つ、ゃ 2つ、ー 2つ
                     const isAyayatoo = (counts['あ'] === 1 && counts['ゃ'] === 2 && counts['ー'] === 2);
+                    // 条件2: あ 1つ、ゃ 3つ、ー 1つ
                     const isAyayayoo = (counts['あ'] === 1 && counts['ゃ'] === 3 && counts['ー'] === 1);
 
-                    if (isAchacha) {
-                        stopAllRollAudio();
-                        statusDiv.textContent = '✨ あちゃちゃ…！ ✨';
-
-                        stats.total++;
-                        updateStatsUI();
-
-                        setTimeout(() => {
-                            if (rollSessionId !== currentSessionId) return;
-
-                            achachaOverlay.classList.add('show');
-
-                            kamiAudio.currentTime = 0;
-                            kamiAudio.volume = getVoiceVol();
-                            kamiAudio.play().catch(e => console.log('kami.mp3 再生エラー:', e));
-
-                            setTimeout(() => {
-                                if (rollSessionId !== currentSessionId) return;
-                                achachaSlideImg.classList.add('slide-down');
-
-                                setTimeout(() => {
-                                    if (rollSessionId !== currentSessionId) return;
-                                    achachaNameIntro.classList.add('show');
-
-                                    setTimeout(() => {
-                                        if (rollSessionId !== currentSessionId) return;
-                                        if (stats.godMood === 1) {
-                                            achachaChoiceText.textContent = '親愛なる信徒よ「あちゃーひ」が欲しいか？';
-                                        } else if (stats.godMood === 2) {
-                                            achachaChoiceText.textContent = 'あちゃーひ神を崇拝するか？';
-                                        } else if (stats.godMood === 3) {
-                                            achachaChoiceText.textContent = '...気は変わったか？';
-                                        } else {
-                                            achachaChoiceText.textContent = '主あちゃーひを信じるか？';
-                                        }
-                                        achachaChoiceContainer.classList.add('show');
-                                    }, 1000);
-                                }, 10000);
-                            }, 300);
-
-                        }, 2000);
-
-                        setTimeout(() => {
-                            if (rollSessionId !== currentSessionId) return;
-                            resultDiv.textContent = '【 あ ち ゃ ち ゃ 】';
-                            resultDiv.classList.remove('fade-out');
-                        }, 2500);
-
-                        return;
-                    }
-
+                    // ★確率変動（確定演出：isSpecialActiveThisRoll）の時は「あややとぅーやー」を発動させないガード
                     if ((isAyayatoo || isAyayayoo) && !isSpecialActiveThisRoll) {
                         stopAllRollAudio();
                         statusDiv.textContent = '…………';
@@ -2543,6 +1903,7 @@
                         setTimeout(() => {
                             if (rollSessionId !== currentSessionId) return;
 
+                            // パターン1（ゃ2つ,ー2つ）の時は残り3個を ['ゃ', 'と', 'ぅ']、パターン2（ゃ3つ,ー1つ）の時は ['ー', 'と', 'ぅ'] で補完して合計8個にする
                             const extraChars = isAyayatoo ? ['ゃ', 'と', 'ぅ'] : ['ー', 'と', 'ぅ'];
 
                             extraChars.forEach((char, index) => {
@@ -2659,11 +2020,7 @@
                     let isMaxCombo = false;
                     let isAchahiOnly = false;
 
-                    if (isGodAcharTriggered) {
-                        fixedChars = ['あ', 'ち', 'ゃ', 'ー', 'ー'];
-                        bannerText = 'ACHA--';
-                        isMaxCombo = true;
-                    } else if (hasA && hasChi && hasYa && hasDash && hasHi) {
+                    if (hasA && hasChi && hasYa && hasDash && hasHi) {
                         fixedChars = ['あ', 'ち', 'ゃ', 'ー', 'ひ'];
                         bannerText = 'ACHA-HI';
                         isMaxCombo = true;
@@ -2713,7 +2070,7 @@
                         stats.unlockedSalvation = true;
                     }
 
-                    if (isSpecialActiveThisRoll && !needsCorrection && isMaxCombo && !isSalvationTriggered && !isGodAcharTriggered) {
+                    if (isSpecialActiveThisRoll && !needsCorrection && isMaxCombo && !isSalvationTriggered) {
                         stats.unlockedSmashIllusion = true;
                     }
 
@@ -2748,7 +2105,7 @@
                     let finalResults = [];
                     const isSuccess = isHit;
 
-                    transitionBGM(isMaxCombo, isGodAcharTriggered);
+                    transitionBGM(isMaxCombo);
 
                     if (isSuccess) {
                         let remainingChars = [...finalRawResults];
@@ -2789,17 +2146,7 @@
                             stats.unlockedPrizeAchahi = true;
                             statusDiv.textContent = '👏はーい、クリップクリップ。なんもないけど👏';
                         } else if (isSalvationTriggered) {
-                            if (stats.godkyusai) {
-                                statusDiv.textContent = '🎉 今日もあちゃーひ神に感謝 🎉';
-                            } else {
-                                statusDiv.textContent = '🎉 奇跡の救済演出！あちゃーひ！ 🎉';
-                            }
-                        } else if (isGodAcharTriggered) {
-                            statusDiv.textContent = '※責任は居眠り王が負います';
-                            if (godacharPopupImg) {
-                                godacharPopupImg.classList.remove('hide-popup');
-                                godacharPopupImg.classList.add('show');
-                            }
+                            statusDiv.textContent = '🎉 奇跡の救済演出！あちゃーひ！ 🎉';
                         } else if (Object.keys(correctionTargets).length > 0) {
                             statusDiv.textContent = '✨ 謎の力でさいころが動いた……！ ✨';
                         } else {
@@ -2809,71 +2156,13 @@
 
                         resultDiv.classList.remove('fade-out');
 
-                        // godMood 3 のとき、あちゃーひ（ACHA-HI）が出たら1/2の確率で早めに「あちゃーー」に変化する演出
-                        if (isMaxCombo && bannerText === 'ACHA-HI' && stats.godMood === 3 && Math.random() < 0.5) {
-                            setTimeout(() => {
-                                if (rollSessionId !== currentSessionId) return;
-
-                                winAudio.pause();
-                                winAudio.currentTime = 0;
-                                achaCameraCount = 0;
-
-                                chonAudio.currentTime = 0;
-                                chonAudio.volume = getVoiceVol();
-                                chonAudio.play().catch(e => console.log('chon.mp3 再生エラー:', e));
-
-                                diceArray.forEach((dice, i) => {
-                                    if (i === 4) {
-                                        const targetChar = 'ー';
-                                        const rot = targetRotations[targetChar];
-                                        new TWEEN.Tween(dice.rotation)
-                                            .to({ x: rot.x + Math.PI * 2, y: rot.y + Math.PI * 2, z: rot.z }, 400)
-                                            .easing(TWEEN.Easing.Cubic.Out)
-                                            .start();
-                                    }
-                                });
-
-                                achaBanner.textContent = 'ACHA--';
-                                achaBanner.style.display = 'block';
-                                achaBanner.classList.remove('flow-acha');
-                                void achaBanner.offsetWidth;
-                                achaBanner.classList.add('flow-acha');
-                                achaBanner.classList.add('gold-mode');
-
-                                statusDiv.textContent = '※責任は居眠り王が負います';
-                                resultDiv.textContent = '【 あ ち ゃ ー ー 】';
-
-                                transitionBGM(true, true);
-
-                                if (godacharPopupImg) {
-                                    godacharPopupImg.classList.remove('hide-popup');
-                                    godacharPopupImg.classList.add('show');
-                                }
-
-                                stats.unlockedGodDestroyedAchahi = true;
-                                stats.godDestroyedAchahiCount++;
-                                checkAndUnlockAchievements();
-
-                                btn.classList.remove('fade-out');
-                                isRolling = false;
-                                btn.disabled = false;
-                            }, 500);
-                            return;
-                        }
-
                         if (isMaxCombo) {
-                            if (isGodAcharTriggered) {
+                            startAchaHiCameraShow(currentSessionId, isSalvationTriggered, () => {
+                                if (rollSessionId !== currentSessionId) return;
                                 btn.classList.remove('fade-out');
                                 isRolling = false;
                                 btn.disabled = false;
-                            } else {
-                                startAchaHiCameraShow(currentSessionId, isSalvationTriggered, () => {
-                                    if (rollSessionId !== currentSessionId) return;
-                                    btn.classList.remove('fade-out');
-                                    isRolling = false;
-                                    btn.disabled = false;
-                                });
-                            }
+                            });
                         } else {
                             btn.classList.remove('fade-out');
                             isRolling = false;
@@ -2942,7 +2231,7 @@
                     obj.position.y = (obj.userData.baseY || 0.5) + Math.sin(loopTime * 2.5 + offset) * 0.25;
                 });
 
-                const toggleInterval = 5.0; 
+                const toggleInterval = 5.0; // 5秒ごとに切り替え
                 const cycleIndex = Math.floor(loopTime / toggleInterval) % 2;
 
                 if (cycleIndex === 0) {
